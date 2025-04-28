@@ -29,6 +29,7 @@ export default async function DashboardPage() {
         initialBudget={budgetData?.budget}
         currentExpenses={budgetData?.currentExpenses || 0}
       />
+      
 
       {/* Dashboard Overview */}
       <DashboardOverview

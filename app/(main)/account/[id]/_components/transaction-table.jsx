@@ -54,6 +54,10 @@ import { bulkDeleteTransactions } from "@/actions/account";
 import useFetch from "@/hooks/use-fetch";
 import { BarLoader } from "react-spinners";
 import { useRouter } from "next/navigation";
+import { mkConfig, generateCsv, download } from "export-to-csv";
+import Papa from "papaparse"; // For generating CSV
+
+
 
 const ITEMS_PER_PAGE = 10;
 
@@ -196,6 +200,38 @@ export function TransactionTable({ transactions }) {
     setSelectedIds([]); // Clear selections on page change
   };
 
+  const handleDownloadCsv = () => {
+    // Ensure you are using the filtered transactions (can be paginated or fully filtered)
+    const filteredTransactions = paginatedTransactions.length ? paginatedTransactions : [];
+  
+    // Clean data for CSV export
+    const cleanedTransactions = filteredTransactions.map((transaction) => ({
+      Description: transaction.description || "",
+      Category: typeof transaction.category === "object"
+        ? transaction.category?.name || ""
+        : transaction.category || "",
+      Amount: (transaction.type === "EXPENSE" ? "-" : "+") + transaction.amount.toFixed(2),
+      Recurring: transaction.isRecurring
+        ? RECURRING_INTERVALS[transaction.recurringInterval] || "Recurring"
+        : "One-time",
+    }));
+  
+    // Convert to CSV
+    const csv = Papa.unparse(cleanedTransactions);
+  
+    // Create and trigger CSV download
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "transactions.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+  
+  
+
   return (
     <div className="space-y-4">
       {deleteLoading && (
@@ -272,6 +308,12 @@ export function TransactionTable({ transactions }) {
               <X className="h-4 w-5" />
             </Button>
           )}
+
+          <Button variant="outline" size="sm" onClick={handleDownloadCsv}>
+            Download CSV
+          </Button>
+
+
         </div>
       </div>
 
