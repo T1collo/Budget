@@ -1,11 +1,16 @@
-import { SignOut } from '@clerk/nextjs'
-
-import React from 'react'
+import { useClerk } from "@clerk/nextjs";
+import React from "react";
 
 const page = () => {
-  return (
-    <div><SignOut /></div>
-  )
-}
+  const { signOut } = useClerk();
 
-export default page
+  return (
+    <div>
+      <button onClick={() => signOut()} className="btn">
+        Sign Out
+      </button>
+    </div>
+  );
+};
+
+export default page;
