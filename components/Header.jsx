@@ -5,6 +5,7 @@ import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { checkUser } from "@/lib/checkUser";
 import Image from "next/image";
+import { GiFluffyFlame } from "react-icons/gi";
 
 const Header = async () => {
   await checkUser();
@@ -12,15 +13,12 @@ const Header = async () => {
   return (
     <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
       <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link href="/">
-          <Image
-            src={"/logo.png"}
-            alt="Welth Logo"
-            width={200}
-            height={60}
-            className="h-12 w-auto object-contain"
-          />
-        </Link>
+      <div className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 hover:-translate-y-2 transform duration-700">
+            <GiFluffyFlame className="text-7xl text-blue-400 animate-accordion-up" />
+            <h1 className="text-blue-500 text-4xl font-semibold">BudgetIQ</h1>
+          </Link>
+        </div>
 
         {/* Navigation Links - Different for signed in/out users */}
         <div className="hidden md:flex items-center space-x-8">
