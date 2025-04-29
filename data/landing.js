@@ -44,23 +44,14 @@ import {
     {
       icon: <PieChart className="h-8 w-8 text-blue-600" />,
       title: "Budget Planning",
-      description: "Create and manage budgets with intelligent recommendations",
+      description: "Create and manage account budgets",
     },
     {
       icon: <CreditCard className="h-8 w-8 text-blue-600" />,
       title: "Multi-Account Support",
-      description: "Manage multiple accounts and credit cards in one place",
+      description: "Manage multiple accounts in one place",
     },
-    {
-      icon: <Globe className="h-8 w-8 text-blue-600" />,
-      title: "Multi-Currency",
-      description: "Support for multiple currencies with real-time conversion",
-    },
-    {
-      icon: <Zap className="h-8 w-8 text-blue-600" />,
-      title: "Automated Insights",
-      description: "Get automated financial insights and recommendations",
-    },
+    
   ];
   
   // How It Works Data

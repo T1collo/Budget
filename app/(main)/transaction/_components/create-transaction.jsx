@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { MdAccountBalanceWallet } from "react-icons/md";
 import {
   Select,
   SelectContent,
@@ -140,7 +141,7 @@ export function AddTransactionForm({
           onValueChange={(value) => setValue("type", value)}
           defaultValue={type}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select type" />
           </SelectTrigger>
           <SelectContent>
@@ -174,7 +175,7 @@ export function AddTransactionForm({
             onValueChange={(value) => setValue("accountId", value)}
             defaultValue={getValues("accountId")}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Select account" />
             </SelectTrigger>
             <SelectContent>
@@ -183,14 +184,16 @@ export function AddTransactionForm({
                   {account.name} (${parseFloat(account.balance).toFixed(2)})
                 </SelectItem>
               ))}
-              <CreateAccount>
-                <Button
-                  variant="ghost"
-                  className="relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground"
-                >
-                  Create Account
-                </Button>
-              </CreateAccount>
+             <CreateAccount>
+  <div
+    role="button"
+    tabIndex={0}
+    className="relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2  outline-none hover:bg-accent hover:text-accent-foreground"
+  >
+   <MdAccountBalanceWallet className="text-xl"/> Create Account
+  </div>
+</CreateAccount>
+
             </SelectContent>
           </Select>
           {errors.accountId && (
@@ -206,7 +209,7 @@ export function AddTransactionForm({
           onValueChange={(value) => setValue("category", value)}
           defaultValue={getValues("category")}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>

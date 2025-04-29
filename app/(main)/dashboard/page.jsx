@@ -7,12 +7,22 @@ import { BudgetProgress } from "./_components/budget-progress";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { DashboardOverview } from "./_components/transaction-overview";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card"
+
+
 
 export default async function DashboardPage() {
   const [accounts, transactions] = await Promise.all([
     getUserAccounts(),
     getDashboardData(),
   ]);
+
+ 
+
 
   const defaultAccount = accounts?.find((account) => account.isDefault);
 
@@ -24,6 +34,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
+
       {/* Budget Progress */}
       <BudgetProgress
         initialBudget={budgetData?.budget}
@@ -39,14 +50,22 @@ export default async function DashboardPage() {
 
       {/* Accounts Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <CreateAccount>
-          <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed">
-            <CardContent className="flex flex-col items-center justify-center text-muted-foreground h-full pt-5">
-              <Plus className="h-10 w-10 mb-2" />
-              <p className="text-sm font-medium">Add New Account</p>
-            </CardContent>
-          </Card>
-        </CreateAccount>
+      <HoverCard>
+  <HoverCardTrigger asChild>
+    <CreateAccount>
+      <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed">
+        <CardContent className="flex flex-col items-center justify-center text-muted-foreground h-full pt-5">
+          <Plus className="h-10 w-10 mb-2" />
+          <p className="text-sm font-medium">Add New Account</p>
+        </CardContent>
+      </Card>
+    </CreateAccount>
+  </HoverCardTrigger>
+  <HoverCardContent className="w-64 text-sm text-muted-foreground">
+    Create a new account to track your income, expenses, or savings.
+  </HoverCardContent>
+</HoverCard>
+
         {accounts.length > 0 &&
           accounts?.map((account) => (
             <AccountCard key={account.id} account={account} />
