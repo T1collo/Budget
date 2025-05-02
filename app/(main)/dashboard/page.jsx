@@ -50,21 +50,16 @@ export default async function DashboardPage() {
 
       {/* Accounts Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <HoverCard>
-  <HoverCardTrigger asChild>
-    <CreateAccount>
-      <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed">
-        <CardContent className="flex flex-col items-center justify-center text-muted-foreground h-full pt-5">
-          <Plus className="h-10 w-10 mb-2" />
-          <p className="text-sm font-medium">Add New Account</p>
-        </CardContent>
-      </Card>
-    </CreateAccount>
-  </HoverCardTrigger>
-  <HoverCardContent className="w-64 text-sm text-muted-foreground">
-    Create a new account to track your income, expenses, or savings.
-  </HoverCardContent>
-</HoverCard>
+      
+          <CreateAccount>
+            <Card className="hover:shadow-md transition-shadow cursor-pointer border-dashed">
+              <CardContent className="flex flex-col items-center justify-center text-muted-foreground h-full pt-5">
+                <Plus className="h-10 w-10 mb-2" />
+                <p className="text-sm font-medium">Add New Account</p>
+              </CardContent>
+            </Card>
+          </CreateAccount>
+       
 
         {accounts.length > 0 &&
           accounts?.map((account) => (

@@ -1,7 +1,7 @@
 "use client";
 
-import { ArrowUpRight, ArrowDownRight } from "lucide-react";
-import { useEffect } from "react";
+import { ArrowUpRight, ArrowDownRight, Trash } from "lucide-react";
+import { useEffect, useState } from "react";
 import useFetch from "@/hooks/use-fetch";
 import {
   Card,
@@ -11,12 +11,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import Link from "next/link";
-import { updateDefaultAccount } from "@/actions/account";
+import { DeleteAccount, updateDefaultAccount } from "@/actions/account";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
 
 export function AccountCard({ account }) {
   const { name, type, balance, id, isDefault } = account;
+  const [selectedIds, setSelectedIds] = useState([]);
 
   const {
     loading: updateDefaultLoading,
@@ -61,6 +63,24 @@ export function AccountCard({ account }) {
             onClick={handleDefaultChange}
             disabled={updateDefaultLoading}
           />
+          <Button
+          className="cursor-pointer"
+            size="sm"
+            onClick={async (e) => {
+              e.preventDefault(); // Prevents navigation due to wrapping <Link />
+              const res = await DeleteAccount(id);
+              if (res.success) {
+                toast.success("Account deleted successfully");
+                // Optionally: refresh the UI or route here if needed
+              } else {
+                toast.error(res.error || "Failed to delete account");
+              }
+            }}
+          >
+            <Trash className="h-4 w-4 mr-2" />
+            Delete Account
+          </Button>
+
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">

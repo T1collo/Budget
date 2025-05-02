@@ -56,6 +56,8 @@ import { BarLoader } from "react-spinners";
 import { useRouter } from "next/navigation";
 import { mkConfig, generateCsv, download } from "export-to-csv";
 import Papa from "papaparse"; // For generating CSV
+import * as XLSX from "xlsx";
+
 
 
 
@@ -202,7 +204,7 @@ export function TransactionTable({ transactions }) {
 
   const handleDownloadCsv = () => {
     // Ensure you are using the filtered transactions (can be paginated or fully filtered)
-    const filteredTransactions = paginatedTransactions.length ? paginatedTransactions : [];
+    const filteredTransactions = filteredAndSortedTransactions.length ? filteredAndSortedTransactions : [];
   
     // Clean data for CSV export
     const cleanedTransactions = filteredTransactions.map((transaction) => ({
@@ -228,6 +230,31 @@ export function TransactionTable({ transactions }) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  };
+  
+  const handleDownloadExcel = () => {
+    const filteredTransactions = filteredAndSortedTransactions.length ? filteredAndSortedTransactions : [];
+  
+    const cleanedTransactions = filteredTransactions.map((transaction) => ({
+      Description: transaction.description || "",
+      Category: typeof transaction.category === "object"
+        ? transaction.category?.name || ""
+        : transaction.category || "",
+      Amount: (transaction.type === "EXPENSE" ? "-" : "+") + transaction.amount.toFixed(2),
+      Recurring: transaction.isRecurring
+        ? RECURRING_INTERVALS[transaction.recurringInterval] || "Recurring"
+        : "One-time",
+    }));
+  
+    // Convert JSON to worksheet
+    const worksheet = XLSX.utils.json_to_sheet(cleanedTransactions);
+  
+    // Create a new workbook and append worksheet
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Transactions");
+  
+    // Generate Excel file and trigger download
+    XLSX.writeFile(workbook, "transactions.xlsx");
   };
   
   
@@ -288,6 +315,7 @@ export function TransactionTable({ transactions }) {
           {selectedIds.length > 0 && (
             <div className="flex items-center gap-2">
               <Button
+                className="cursor-pointer"
                 variant="destructive"
                 size="sm"
                 onClick={handleBulkDelete}
@@ -309,10 +337,26 @@ export function TransactionTable({ transactions }) {
             </Button>
           )}
 
-          <Button variant="outline" size="sm" onClick={handleDownloadCsv}>
-            Download CSV
+          <Select
+            value={typeFilter}
+            onValueChange={(value) => {
+              setTypeFilter(value);
+              setCurrentPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[130px]">
+              <SelectValue placeholder="Download" />
+            </SelectTrigger>
+            <SelectContent>
+            <Button variant="outline" size="sm" onClick={handleDownloadCsv}>
+              Download CSV
+            </Button>
+          <Button variant="outline" size="sm" onClick={handleDownloadExcel}>
+            Download Excel
           </Button>
 
+            </SelectContent>
+          </Select>
 
         </div>
       </div>

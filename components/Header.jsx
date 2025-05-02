@@ -2,10 +2,11 @@ import React from "react";
 import { Button } from "./ui/button";
 // import { PenBox, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { checkUser } from "@/lib/checkUser";
 import Image from "next/image";
 import { GiFluffyFlame } from "react-icons/gi";
+import { ThemeSwitcherBtn } from "./ThemeSwitcherBtn";
 
 const Header = async () => {
   await checkUser();
@@ -58,6 +59,9 @@ const Header = async () => {
             <SignInButton forceRedirectUrl="/dashboard">
               <Button variant="outline">Login</Button>
             </SignInButton>
+            <SignUpButton forceRedirectUrl="/dashboard">
+              <Button >Sign Up</Button>
+            </SignUpButton>
           </SignedOut>
           <SignedIn>
             <UserButton
