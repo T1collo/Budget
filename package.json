@@ -46,7 +46,7 @@
     "date-fns": "^4.1.0",
     "export-to-csv": "^1.4.0",
     "framer-motion": "^13.1.1",
-    "inngest": "^3.35.1",
+    "inngest": "^3.54.2",
     "lucide-react": "^0.503.0",
     "motion": "^13.1.1",
     "next": "^15.5.25",
