@@ -1,10 +1,9 @@
 import React from "react";
 import { Button } from "./ui/button";
-// import { PenBox, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
 import { checkUser } from "@/lib/checkUser";
-import Image from "next/image";
+import { LayoutDashboard, PenBox, Settings } from "lucide-react";
 import { GiFluffyFlame } from "react-icons/gi";
 import { ThemeSwitcherBtn } from "./ThemeSwitcherBtn";
 
@@ -12,65 +11,47 @@ const Header = async () => {
   await checkUser();
 
   return (
-    <header className="fixed top-0 w-full bg-white/80 backdrop-blur-md z-50 border-b">
-      <nav className="container mx-auto px-4 py-4 flex items-center justify-between">
-      <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-center gap-2 hover:-translate-y-2 transform duration-700">
-            <GiFluffyFlame className="text-7xl text-blue-400 animate-accordion-up" />
-            <h1 className="text-blue-500 text-4xl font-semibold">BudgetIQ</h1>
-          </Link>
-        </div>
+    <header className="fixed top-0 z-50 h-16 w-full border-b bg-background/80 backdrop-blur-md">
+      <nav className="container mx-auto flex h-full items-center justify-between px-4">
+        <Link href="/" className="flex items-center gap-2">
+          <GiFluffyFlame className="text-3xl text-primary" />
+          <span className="text-xl font-semibold tracking-tight">BudgetIQ</span>
+        </Link>
 
-        {/* Navigation Links - Different for signed in/out users */}
-        <div className="hidden md:flex items-center space-x-8">
-          <SignedOut>
-            <a href="#features" className="text-gray-600 hover:text-blue-600">
-              Features
-            </a>
-            <a
-              href="#testimonials"
-              className="text-gray-600 hover:text-blue-600"
-            >
-              Testimonials
-            </a>
-          </SignedOut>
-        </div>
-
-        {/* Action Buttons */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center gap-2">
           <SignedIn>
-            <Link
-              href="/dashboard"
-              className="text-gray-600 hover:text-blue-600 flex items-center gap-2"
-            >
-              <Button variant="outline">
-                {/* <LayoutDashboard size={18} /> */}
-                <span className="hidden md:inline">Dashboard</span>
-              </Button>
-            </Link>
-            <a href="/transaction/create">
-              <Button className="flex items-center gap-2">
-                {/* <PenBox size={18} /> */}
-                <span className="hidden md:inline">Add Transaction</span>
-              </Button>
-            </a>
+            <Button variant="ghost" size="sm" asChild>
+              <Link href="/dashboard">
+                <LayoutDashboard className="size-4" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </Link>
+            </Button>
+            <Button variant="ghost" size="icon" className="size-9" asChild>
+              <Link href="/settings" aria-label="Settings">
+                <Settings className="size-4" />
+              </Link>
+            </Button>
+            <Button size="sm" asChild>
+              <Link href="/transaction/create">
+                <PenBox className="size-4" />
+                <span className="hidden sm:inline">Add Transaction</span>
+              </Link>
+            </Button>
           </SignedIn>
+
           <SignedOut>
             <SignInButton forceRedirectUrl="/dashboard">
-              <Button variant="outline">Login</Button>
+              <Button variant="ghost" size="sm">Login</Button>
             </SignInButton>
             <SignUpButton forceRedirectUrl="/dashboard">
-              <Button >Sign Up</Button>
+              <Button size="sm">Sign Up</Button>
             </SignUpButton>
           </SignedOut>
+
+          <ThemeSwitcherBtn />
+
           <SignedIn>
-            <UserButton
-              appearance={{
-                elements: {
-                  avatarBox: "w-10 h-10",
-                },
-              }}
-            />
+            <UserButton appearance={{ elements: { avatarBox: "size-8" } }} />
           </SignedIn>
         </div>
       </nav>

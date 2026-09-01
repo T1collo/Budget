@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Pencil, Check, X } from "lucide-react";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
@@ -16,8 +16,10 @@ import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { updateBudget } from "@/actions/budget";
+import { useCurrency } from "@/components/currency-provider";
 
 export function BudgetProgress({ initialBudget, currentExpenses }) {
+  const { format: currency } = useCurrency();
   const [isEditing, setIsEditing] = useState(false);
   const [newBudget, setNewBudget] = useState(
     initialBudget?.amount?.toString() || ""
@@ -30,15 +32,19 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
     error,
   } = useFetch(updateBudget);
 
-  const percentUsed = initialBudget
+  const percentUsed = initialBudget?.amount
     ? (currentExpenses / initialBudget.amount) * 100
     : 0;
+
+  const tone =
+    percentUsed >= 100 ? "over" : percentUsed >= 80 ? "warn" : "ok";
+  const barClass = { ok: "bg-ok", warn: "bg-warn", over: "bg-over" }[tone];
 
   const handleUpdateBudget = async () => {
     const amount = parseFloat(newBudget);
 
-    if (isNaN(amount) || amount <= 0) {
-      toast.error("Please enter a valid amount");
+    if (!Number.isFinite(amount) || amount <= 0) {
+      toast.error("Enter an amount greater than zero");
       return;
     }
 
@@ -53,7 +59,7 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
   useEffect(() => {
     if (updatedBudget?.success) {
       setIsEditing(false);
-      toast.success("Budget updated successfully");
+      toast.success("Overall cap updated");
     }
   }, [updatedBudget]);
 
@@ -65,81 +71,89 @@ export function BudgetProgress({ initialBudget, currentExpenses }) {
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="flex-1">
-          <CardTitle className="text-sm font-medium">
-            Monthly Budget (Default Account)
-          </CardTitle>
-          <div className="flex items-center gap-2 mt-1">
-            {isEditing ? (
-              <div className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  value={newBudget}
-                  onChange={(e) => setNewBudget(e.target.value)}
-                  className="w-32"
-                  placeholder="Enter amount"
-                  autoFocus
-                  disabled={isLoading}
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleUpdateBudget}
-                  disabled={isLoading}
-                >
-                  <Check className="h-4 w-4 text-green-500" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleCancel}
-                  disabled={isLoading}
-                >
-                  <X className="h-4 w-4 text-red-500" />
-                </Button>
-              </div>
-            ) : (
-              <>
-                <CardDescription>
-                  {initialBudget
-                    ? `$${currentExpenses.toFixed(
-                        2
-                      )} of $${initialBudget.amount.toFixed(2)} spent`
-                    : "No budget set"}
-                </CardDescription>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setIsEditing(true)}
-                  className="h-6 w-6"
-                >
-                  <Pencil className="h-3 w-3" />
-                </Button>
-              </>
-            )}
+      <CardHeader className="space-y-0 pb-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="min-w-0">
+            <CardTitle className="text-base">Overall monthly cap</CardTitle>
+            <CardDescription className="mt-1">
+              {initialBudget
+                ? `${currency(currentExpenses)} of ${currency(
+                    initialBudget.amount
+                  )} spent on your default account`
+                : "Optional ceiling across all categories"}
+            </CardDescription>
           </div>
+
+          {isEditing ? (
+            <div className="flex items-center gap-1">
+              <Input
+                type="number"
+                min="0"
+                step="0.01"
+                inputMode="decimal"
+                value={newBudget}
+                onChange={(e) => setNewBudget(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleUpdateBudget();
+                  if (e.key === "Escape") handleCancel();
+                }}
+                className="h-8 w-28"
+                placeholder="Amount"
+                autoFocus
+                disabled={isLoading}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                aria-label="Save cap"
+                onClick={handleUpdateBudget}
+                disabled={isLoading}
+              >
+                <Check className="text-ok size-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="size-8"
+                aria-label="Cancel"
+                onClick={handleCancel}
+                disabled={isLoading}
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+          ) : (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-8 shrink-0"
+              aria-label="Edit overall cap"
+              onClick={() => setIsEditing(true)}
+            >
+              <Pencil className="size-3.5" />
+            </Button>
+          )}
         </div>
       </CardHeader>
+
       <CardContent>
-        {initialBudget && (
+        {initialBudget ? (
           <div className="space-y-2">
-           <Progress
-              value={percentUsed}
-              className={`${
-                percentUsed >= 90
-                  ? "bg-red-500"
-                  : percentUsed >= 75
-                  ? "bg-yellow-500"
-                  : "bg-green-500"
-              } border-0`} // Ensure the border is removed
+            {/* indicatorClassName, not className: the colour has to land on the
+                bar, not the track behind it. */}
+            <Progress
+              value={Math.min(percentUsed, 100)}
+              indicatorClassName={barClass}
             />
-
-
-            <p className="text-xs text-muted-foreground text-right">
-              {percentUsed.toFixed(1)}% used
+            <p className="text-muted-foreground text-right text-xs tabular-nums">
+              {percentUsed.toFixed(0)}% used
             </p>
           </div>
+        ) : (
+          <p className="text-muted-foreground text-sm">
+            No cap set. Category budgets below work without one.
+          </p>
         )}
       </CardContent>
     </Card>

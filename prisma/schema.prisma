@@ -21,9 +21,11 @@ model User {
   email         String    @unique
   name          String?
   imageUrl      String?
+  currency      String        @default("USD") // ISO 4217 code, set in /settings
   transactions  Transaction[]
   accounts      Account[]
   budgets       Budget[]
+  categoryBudgets CategoryBudget[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -71,6 +73,21 @@ model Transaction {
   @@map("transactions")
 }
 
+
+model CategoryBudget {
+  id            String    @id @default(uuid())
+  category      String    // matches Transaction.category / data/categories.js ids
+  amount        Decimal
+  lastAlertSent DateTime? // set when the 80%/100% alert fired this month
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([userId, category])
+  @@index([userId])
+  @@map("category_budgets")
+}
 
 model Budget {
   id          String       @id @default(uuid())

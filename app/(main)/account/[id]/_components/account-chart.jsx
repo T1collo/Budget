@@ -1,16 +1,12 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { BarChart } from "@/components/charts/bar-chart";
+import { Bar } from "@/components/charts/bar";
+import { BarXAxis } from "@/components/charts/bar-x-axis";
+import { BarYAxis } from "@/components/charts/bar-y-axis";
+import { Grid } from "@/components/charts/grid";
+import { ChartTooltip } from "@/components/charts/tooltip";
 import { format, subDays, startOfDay, endOfDay } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -20,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useCurrency } from "@/components/currency-provider";
 
 const DATE_RANGES = {
   "7D": { label: "Last 7 Days", days: 7 },
@@ -30,6 +27,7 @@ const DATE_RANGES = {
 };
 
 export function AccountChart({ transactions }) {
+  const { format: currency, symbol } = useCurrency();
   const [dateRange, setDateRange] = useState("1M");
 
   const filteredData = useMemo(() => {
@@ -98,71 +96,60 @@ export function AccountChart({ transactions }) {
         <div className="flex justify-around mb-6 text-sm">
           <div className="text-center">
             <p className="text-muted-foreground">Total Income</p>
-            <p className="text-lg font-bold text-green-500">
-              ${totals.income.toFixed(2)}
+            <p className="text-ok text-lg font-semibold tabular-nums">
+              {currency(totals.income)}
             </p>
           </div>
           <div className="text-center">
             <p className="text-muted-foreground">Total Expenses</p>
-            <p className="text-lg font-bold text-red-500">
-              ${totals.expense.toFixed(2)}
+            <p className="text-over text-lg font-semibold tabular-nums">
+              {currency(totals.expense)}
             </p>
           </div>
           <div className="text-center">
             <p className="text-muted-foreground">Net</p>
             <p
-              className={`text-lg font-bold ${
-                totals.income - totals.expense >= 0
-                  ? "text-green-500"
-                  : "text-red-500"
+              className={`text-lg font-semibold tabular-nums ${
+                totals.income - totals.expense >= 0 ? "text-ok" : "text-over"
               }`}
             >
-              ${(totals.income - totals.expense).toFixed(2)}
+              {currency(totals.income - totals.expense)}
             </p>
           </div>
         </div>
-        <div className="h-[300px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={filteredData}
-              margin={{ top: 10, right: 10, left: 10, bottom: 0 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis
-                dataKey="date"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `$${value}`}
-              />
-              <Tooltip
-                formatter={(value) => [`$${value}`, undefined]}
-                contentStyle={{
-                  backgroundColor: "hsl(var(--popover))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: "var(--radius)",
-                }}
-              />
-              <Legend />
-              <Bar
-                dataKey="income"
-                name="Income"
-                fill="#22c55e"
-                radius={[4, 4, 0, 0]}
-              />
-              <Bar
-                dataKey="expense"
-                name="Expense"
-                fill="#ef4444"
-                radius={[4, 4, 0, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+        <div className="h-[240px] sm:h-[300px]">
+          <BarChart
+            data={filteredData}
+            xDataKey="date"
+            aspectRatio="16 / 9"
+            className="h-full w-full"
+            margin={{ top: 16, right: 8, bottom: 28, left: 48 }}
+          >
+            <Grid horizontal />
+            <Bar dataKey="income" fill="var(--ok)" lineCap="round" />
+            <Bar dataKey="expense" fill="var(--over)" lineCap="round" />
+            <BarXAxis />
+            <BarYAxis tickFormatter={(value) => `${symbol}${value}`} />
+            <ChartTooltip />
+          </BarChart>
+        </div>
+
+        {/* BarChart has no built-in legend, so the series are named here. */}
+        <div className="text-muted-foreground mt-3 flex items-center justify-center gap-4 text-xs">
+          <span className="flex items-center gap-1.5">
+            <span
+              aria-hidden="true"
+              className="bg-ok size-2.5 rounded-full"
+            />
+            Income
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span
+              aria-hidden="true"
+              className="bg-over size-2.5 rounded-full"
+            />
+            Expense
+          </span>
         </div>
       </CardContent>
     </Card>

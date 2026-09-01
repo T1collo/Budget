@@ -1,35 +1,30 @@
 import { Suspense } from "react";
-import DashboardPage from "./page";
-import { BarLoader } from "react-spinners";
-import { currentUser } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
+import { getCurrentUser } from "@/lib/auth-user";
+import { DashboardSkeleton } from "./_components/dashboard-skeleton";
 
-export default async function Layout() {
+export default async function Layout({ children }) {
+  // The (main) layout already redirected anyone signed out. Uses the
+  // request-cached DB row rather than a fresh network call to Clerk's API.
+  const user = await getCurrentUser();
+  const greetingName = user?.name?.split(" ")[0] || "there";
 
-  const user = await currentUser();
-  if (!user) {
-    redirect("/sign-in");
-  }
-  
   return (
-    <div className="px-5">
-      <div className="flex items-center justify-between mb-5">
-      <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-orange-500 via-pink-500 to-purple-500 animate-gradient">
-         Dashboard
-      </h1>
-      <h1 className="text-5xl font-bold bg-clip-text text-transparent animate-gradient">
-         <div className="flex items-center justify-between p-4">
-           <p className="text-3xl font-bold text-gray-500">
-             Hello ,{user.username}! <span className="ml-1">👋</span>
-           </p>
-         </div>
-      </h1>
+    <div className="space-y-8">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <div>
+          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
+            Dashboard
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            Hello, {greetingName} <span aria-hidden="true">👋</span>
+          </p>
+        </div>
       </div>
-      <Suspense
-        fallback={<BarLoader className="mt-4" width={"100%"} color="#9333ea" />}
-      >
-        <DashboardPage />
-      </Suspense>
+
+      {/* Renders `children` - the previous version imported ./page and rendered
+          it directly while discarding children, running every dashboard query
+          twice per load. */}
+      <Suspense fallback={<DashboardSkeleton />}>{children}</Suspense>
     </div>
   );
 }
