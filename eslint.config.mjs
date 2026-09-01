@@ -14,7 +14,14 @@ const eslintConfig = [
   // ~1,900 reported problems and drowned out real ones.
   // Not our code: Prisma's generated client, and the bklit chart components
   // pulled in via the shadcn registry (re-pulled on update, so edits are lost).
-  { ignores: ["lib/generated/**", ".next/**", "components/charts/**"] },
+  {
+    ignores: [
+      "lib/generated/**",
+      ".next/**",
+      "components/charts/**",
+      "next-env.d.ts",
+    ],
+  },
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 
