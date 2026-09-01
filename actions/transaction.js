@@ -6,6 +6,8 @@ import { revalidatePath } from "next/cache";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import aj from "@/lib/arcjet";
 import { request } from "@arcjet/next";
+import { monthRange, crossedThreshold } from "@/lib/budget-utils";
+import { requireUser } from "@/lib/auth-user";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -13,6 +15,50 @@ const serializeAmount = (obj) => ({
   ...obj,
   amount: obj.amount.toNumber(),
 });
+
+
+/**
+ * After an expense lands, report whether THIS transaction is what pushed its
+ * category past a threshold. Computed from the server's own numbers - the
+ * client sends nothing that influences the result.
+ * Returns null when there is no budget for the category or no line was crossed.
+ */
+async function categoryBudgetAlert(userId, transaction) {
+  if (transaction.type !== "EXPENSE") return null;
+
+  const budget = await db.categoryBudget.findUnique({
+    where: { userId_category: { userId, category: transaction.category } },
+  });
+  if (!budget) return null;
+
+  const { start, end } = monthRange(new Date(transaction.date));
+  const spend = await db.transaction.aggregate({
+    where: {
+      userId,
+      type: "EXPENSE",
+      category: transaction.category,
+      date: { gte: start, lte: end },
+    },
+    _sum: { amount: true },
+  });
+
+  const limit = budget.amount.toNumber();
+  if (limit <= 0) return null;
+
+  const spent = spend._sum.amount?.toNumber() ?? 0;
+  const before = spent - transaction.amount.toNumber();
+
+  const crossed = crossedThreshold(before, spent, limit);
+  if (!crossed) return null;
+
+  return {
+    category: transaction.category,
+    threshold: crossed,
+    spent,
+    limit,
+    percentUsed: (spent / limit) * 100,
+  };
+}
 
 // Create Transaction
 export async function createTransaction(data) {
@@ -31,21 +77,20 @@ export async function createTransaction(data) {
 
     if (decision.isDenied()) {
       if (decision.reason.isRateLimit()) {
-        const { remaining, reset } = decision.reason;
+        const { reset } = decision.reason;
+        const seconds = Math.ceil(Number(reset) || 0);
 
-        throw new Error("Too many requests. Please try again later.");
+        throw new Error(
+          seconds > 0
+            ? `Too many requests. Try again in ${seconds}s.`
+            : "Too many requests. Please try again later."
+        );
       }
 
       throw new Error("Request blocked");
     }
 
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await requireUser();
 
     const account = await db.account.findUnique({
       where: {
@@ -83,24 +128,20 @@ export async function createTransaction(data) {
       return newTransaction;
     });
 
+    // Did this transaction push its category past 80% or 100%?
+    const alert = await categoryBudgetAlert(user.id, transaction);
+
     revalidatePath("/dashboard");
     revalidatePath(`/account/${transaction.accountId}`);
 
-    return { success: true, data: serializeAmount(transaction) };
+    return { success: true, data: serializeAmount(transaction), alert };
   } catch (error) {
     throw new Error(error.message);
   }
 }
 
 export async function getTransaction(id) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const user = await db.user.findUnique({
-    where: { clerkUserId: userId },
-  });
-
-  if (!user) throw new Error("User not found");
+  const user = await requireUser();
 
   const transaction = await db.transaction.findUnique({
     where: {
@@ -116,15 +157,7 @@ export async function getTransaction(id) {
 
 export async function updateTransaction(id, data) {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
-
-    if (!user) throw new Error("User not found");
-
+    const user = await requireUser();
     // Get original transaction to calculate balance change
     const originalTransaction = await db.transaction.findUnique({
       where: {
@@ -190,16 +223,7 @@ export async function updateTransaction(id, data) {
 // Get User Transactions
 export async function getUserTransactions(query = {}) {
   try {
-    const { userId } = await auth();
-    if (!userId) throw new Error("Unauthorized");
-
-    const user = await db.user.findUnique({
-      where: { clerkUserId: userId },
-    });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
+    const user = await requireUser();
 
     const transactions = await db.transaction.findMany({
       where: {

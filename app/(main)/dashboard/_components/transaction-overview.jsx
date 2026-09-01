@@ -1,14 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import {
-  PieChart,
-  Pie,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from "recharts";
+import { PieChart } from "@/components/charts/pie-chart";
+import { PieSlice } from "@/components/charts/pie-slice";
+import { PieCenter } from "@/components/charts/pie-center";
 import { format } from "date-fns";
 import { ArrowUpRight, ArrowDownRight } from "lucide-react";
 
@@ -21,18 +16,20 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { categoryColors, defaultCategories } from "@/data/categories";
+import { useCurrency } from "@/components/currency-provider";
 
-const COLORS = [
-  "#FF6B6B",
-  "#4ECDC4",
-  "#45B7D1",
-  "#96CEB4",
-  "#FFEEAD",
-  "#D4A5A5",
-  "#9FA8DA",
-];
+const CATEGORY_NAMES = Object.fromEntries(
+  defaultCategories.map((c) => [c.id, c.name])
+);
+
+// Fallback ramp for any category id not in data/categories.js.
+const FALLBACK_COLORS = ["#64748b", "#0ea5e9", "#8b5cf6", "#f59e0b", "#10b981"];
+
+
 
 export function DashboardOverview({ accounts, transactions }) {
+  const { format: currency, symbol } = useCurrency();
   const [selectedAccountId, setSelectedAccountId] = useState(
     accounts.find((a) => a.isDefault)?.id || accounts[0]?.id
   );
@@ -69,15 +66,18 @@ export function DashboardOverview({ accounts, transactions }) {
   }, {});
 
   // Format data for pie chart
-  const pieChartData = Object.entries(expensesByCategory).map(
-    ([category, amount]) => ({
-      name: category,
+  const pieChartData = Object.entries(expensesByCategory)
+    .map(([category, amount], i) => ({
+      label: CATEGORY_NAMES[category] ?? category,
       value: amount,
-    })
-  );
+      color:
+        categoryColors[category] ??
+        FALLBACK_COLORS[i % FALLBACK_COLORS.length],
+    }))
+    .sort((a, b) => b.value - a.value);
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-4 lg:grid-cols-2">
       {/* Recent Transactions Card */}
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
@@ -88,7 +88,7 @@ export function DashboardOverview({ accounts, transactions }) {
             value={selectedAccountId}
             onValueChange={setSelectedAccountId}
           >
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[130px] sm:w-[160px]">
               <SelectValue placeholder="Select account" />
             </SelectTrigger>
             <SelectContent>
@@ -110,10 +110,10 @@ export function DashboardOverview({ accounts, transactions }) {
               recentTransactions.map((transaction) => (
                 <div
                   key={transaction.id}
-                  className="flex items-center justify-between"
+                  className="flex items-center justify-between gap-3"
                 >
-                  <div className="space-y-1">
-                    <p className="text-sm font-medium leading-none">
+                  <div className="min-w-0 space-y-1">
+                    <p className="truncate text-sm leading-none font-medium">
                       {transaction.description || "Untitled Transaction"}
                     </p>
                     <p className="text-sm text-muted-foreground">
@@ -125,8 +125,8 @@ export function DashboardOverview({ accounts, transactions }) {
                       className={cn(
                         "flex items-center",
                         transaction.type === "EXPENSE"
-                          ? "text-red-500"
-                          : "text-green-500"
+                          ? "text-over"
+                          : "text-ok"
                       )}
                     >
                       {transaction.type === "EXPENSE" ? (
@@ -134,7 +134,9 @@ export function DashboardOverview({ accounts, transactions }) {
                       ) : (
                         <ArrowUpRight className="mr-1 h-4 w-4" />
                       )}
-                      ${transaction.amount.toFixed(2)}
+                      <span className="tabular-nums">
+                        {currency(transaction.amount)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -157,36 +159,42 @@ export function DashboardOverview({ accounts, transactions }) {
               No expenses this month
             </p>
           ) : (
-            <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieChartData}
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    label={({ name, value }) => `${name}: $${value.toFixed(2)}`}
+            <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-center sm:justify-center">
+              <PieChart
+                data={pieChartData}
+                size={220}
+                innerRadius={70}
+                padAngle={0.02}
+                cornerRadius={4}
+                className="shrink-0"
+              >
+                {pieChartData.map((_, index) => (
+                  <PieSlice key={index} index={index} />
+                ))}
+                <PieCenter defaultLabel="Spent" prefix={symbol} />
+              </PieChart>
+
+              {/* The donut carries no labels, so the legend does the naming. */}
+              <ul className="w-full space-y-1.5 sm:max-w-[45%]">
+                {pieChartData.map((slice) => (
+                  <li
+                    key={slice.label}
+                    className="flex items-center justify-between gap-3 text-sm"
                   >
-                    {pieChartData.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span
+                        aria-hidden="true"
+                        className="size-2.5 shrink-0 rounded-full"
+                        style={{ background: slice.color }}
                       />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value) => `$${value.toFixed(2)}`}
-                    contentStyle={{
-                      backgroundColor: "hsl(var(--popover))",
-                      border: "1px solid hsl(var(--border))",
-                      borderRadius: "var(--radius)",
-                    }}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
+                      <span className="truncate">{slice.label}</span>
+                    </span>
+                    <span className="text-muted-foreground shrink-0 tabular-nums">
+                      {currency(slice.value)}
+                    </span>
+                  </li>
+                ))}
+              </ul>
             </div>
           )}
         </CardContent>

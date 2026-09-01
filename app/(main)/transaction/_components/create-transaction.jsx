@@ -28,6 +28,12 @@ import { Calendar } from "@/components/ui/calendar";
 import CreateAccount from "@/components/CreateAccount";
 import { cn } from "@/lib/utils";
 import { createTransaction, updateTransaction } from "@/actions/transaction";
+import { defaultCategories } from "@/data/categories";
+import { useCurrency } from "@/components/currency-provider";
+
+const CATEGORY_NAMES = Object.fromEntries(
+  defaultCategories.map((c) => [c.id, c.name])
+);
 import { transactionSchema } from "@/app/lib/schema";
 import useFetch from "@/hooks/use-fetch";
 import { ReceiptScanner } from "./reciept-scanner";
@@ -41,6 +47,7 @@ export function AddTransactionForm({
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
+  const { format: currency } = useCurrency();
 
   const {
     register,
@@ -116,6 +123,27 @@ export function AddTransactionForm({
           ? "Transaction updated successfully"
           : "Transaction created successfully"
       );
+
+      // The server tells us whether THIS transaction crossed a category
+      // threshold. It is computed from the server's own totals, so the client
+      // can neither manufacture nor suppress it.
+      const alert = transactionResult.alert;
+      if (alert) {
+        const name = CATEGORY_NAMES[alert.category] ?? alert.category;
+        const notify = alert.threshold >= 100 ? toast.error : toast.warning;
+        notify(
+          alert.threshold >= 100
+            ? `${name} is over budget`
+            : `${name} is at ${Math.round(alert.percentUsed)}% of budget`,
+          {
+            description: `${currency(alert.spent)} of ${currency(
+              alert.limit
+            )} spent this month.`,
+            duration: 8000,
+          }
+        );
+      }
+
       reset();
       router.push(`/account/${transactionResult.data.accountId}`);
     }

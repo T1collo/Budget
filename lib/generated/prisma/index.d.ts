@@ -29,6 +29,11 @@ export type Account = $Result.DefaultSelection<Prisma.$AccountPayload>
  */
 export type Transaction = $Result.DefaultSelection<Prisma.$TransactionPayload>
 /**
+ * Model CategoryBudget
+ * 
+ */
+export type CategoryBudget = $Result.DefaultSelection<Prisma.$CategoryBudgetPayload>
+/**
  * Model Budget
  * 
  */
@@ -244,6 +249,16 @@ export class PrismaClient<
     * ```
     */
   get transaction(): Prisma.TransactionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.categoryBudget`: Exposes CRUD operations for the **CategoryBudget** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more CategoryBudgets
+    * const categoryBudgets = await prisma.categoryBudget.findMany()
+    * ```
+    */
+  get categoryBudget(): Prisma.CategoryBudgetDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.budget`: Exposes CRUD operations for the **Budget** model.
@@ -697,6 +712,7 @@ export namespace Prisma {
     User: 'User',
     Account: 'Account',
     Transaction: 'Transaction',
+    CategoryBudget: 'CategoryBudget',
     Budget: 'Budget'
   };
 
@@ -716,7 +732,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "account" | "transaction" | "budget"
+      modelProps: "user" | "account" | "transaction" | "categoryBudget" | "budget"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -942,6 +958,80 @@ export namespace Prisma {
           }
         }
       }
+      CategoryBudget: {
+        payload: Prisma.$CategoryBudgetPayload<ExtArgs>
+        fields: Prisma.CategoryBudgetFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.CategoryBudgetFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.CategoryBudgetFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload>
+          }
+          findFirst: {
+            args: Prisma.CategoryBudgetFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.CategoryBudgetFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload>
+          }
+          findMany: {
+            args: Prisma.CategoryBudgetFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload>[]
+          }
+          create: {
+            args: Prisma.CategoryBudgetCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload>
+          }
+          createMany: {
+            args: Prisma.CategoryBudgetCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.CategoryBudgetCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload>[]
+          }
+          delete: {
+            args: Prisma.CategoryBudgetDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload>
+          }
+          update: {
+            args: Prisma.CategoryBudgetUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload>
+          }
+          deleteMany: {
+            args: Prisma.CategoryBudgetDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.CategoryBudgetUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.CategoryBudgetUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload>[]
+          }
+          upsert: {
+            args: Prisma.CategoryBudgetUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$CategoryBudgetPayload>
+          }
+          aggregate: {
+            args: Prisma.CategoryBudgetAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateCategoryBudget>
+          }
+          groupBy: {
+            args: Prisma.CategoryBudgetGroupByArgs<ExtArgs>
+            result: $Utils.Optional<CategoryBudgetGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.CategoryBudgetCountArgs<ExtArgs>
+            result: $Utils.Optional<CategoryBudgetCountAggregateOutputType> | number
+          }
+        }
+      }
       Budget: {
         payload: Prisma.$BudgetPayload<ExtArgs>
         fields: Prisma.BudgetFieldRefs
@@ -1103,6 +1193,7 @@ export namespace Prisma {
     user?: UserOmit
     account?: AccountOmit
     transaction?: TransactionOmit
+    categoryBudget?: CategoryBudgetOmit
     budget?: BudgetOmit
   }
 
@@ -1201,12 +1292,14 @@ export namespace Prisma {
     transactions: number
     accounts: number
     budgets: number
+    categoryBudgets: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     transactions?: boolean | UserCountOutputTypeCountTransactionsArgs
     accounts?: boolean | UserCountOutputTypeCountAccountsArgs
     budgets?: boolean | UserCountOutputTypeCountBudgetsArgs
+    categoryBudgets?: boolean | UserCountOutputTypeCountCategoryBudgetsArgs
   }
 
   // Custom InputTypes
@@ -1239,6 +1332,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountBudgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BudgetWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountCategoryBudgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CategoryBudgetWhereInput
   }
 
 
@@ -1293,6 +1393,7 @@ export namespace Prisma {
     email: string | null
     name: string | null
     imageUrl: string | null
+    currency: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1303,6 +1404,7 @@ export namespace Prisma {
     email: string | null
     name: string | null
     imageUrl: string | null
+    currency: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -1313,6 +1415,7 @@ export namespace Prisma {
     email: number
     name: number
     imageUrl: number
+    currency: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -1325,6 +1428,7 @@ export namespace Prisma {
     email?: true
     name?: true
     imageUrl?: true
+    currency?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1335,6 +1439,7 @@ export namespace Prisma {
     email?: true
     name?: true
     imageUrl?: true
+    currency?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -1345,6 +1450,7 @@ export namespace Prisma {
     email?: true
     name?: true
     imageUrl?: true
+    currency?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -1428,6 +1534,7 @@ export namespace Prisma {
     email: string
     name: string | null
     imageUrl: string | null
+    currency: string
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
@@ -1455,11 +1562,13 @@ export namespace Prisma {
     email?: boolean
     name?: boolean
     imageUrl?: boolean
+    currency?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     transactions?: boolean | User$transactionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     budgets?: boolean | User$budgetsArgs<ExtArgs>
+    categoryBudgets?: boolean | User$categoryBudgetsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -1469,6 +1578,7 @@ export namespace Prisma {
     email?: boolean
     name?: boolean
     imageUrl?: boolean
+    currency?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1479,6 +1589,7 @@ export namespace Prisma {
     email?: boolean
     name?: boolean
     imageUrl?: boolean
+    currency?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }, ExtArgs["result"]["user"]>
@@ -1489,15 +1600,17 @@ export namespace Prisma {
     email?: boolean
     name?: boolean
     imageUrl?: boolean
+    currency?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkUserId" | "email" | "name" | "imageUrl" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "clerkUserId" | "email" | "name" | "imageUrl" | "currency" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     transactions?: boolean | User$transactionsArgs<ExtArgs>
     accounts?: boolean | User$accountsArgs<ExtArgs>
     budgets?: boolean | User$budgetsArgs<ExtArgs>
+    categoryBudgets?: boolean | User$categoryBudgetsArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -1509,6 +1622,7 @@ export namespace Prisma {
       transactions: Prisma.$TransactionPayload<ExtArgs>[]
       accounts: Prisma.$AccountPayload<ExtArgs>[]
       budgets: Prisma.$BudgetPayload<ExtArgs>[]
+      categoryBudgets: Prisma.$CategoryBudgetPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -1516,6 +1630,7 @@ export namespace Prisma {
       email: string
       name: string | null
       imageUrl: string | null
+      currency: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["user"]>
@@ -1915,6 +2030,7 @@ export namespace Prisma {
     transactions<T extends User$transactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$transactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TransactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     accounts<T extends User$accountsArgs<ExtArgs> = {}>(args?: Subset<T, User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     budgets<T extends User$budgetsArgs<ExtArgs> = {}>(args?: Subset<T, User$budgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BudgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    categoryBudgets<T extends User$categoryBudgetsArgs<ExtArgs> = {}>(args?: Subset<T, User$categoryBudgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1949,6 +2065,7 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly name: FieldRef<"User", 'String'>
     readonly imageUrl: FieldRef<"User", 'String'>
+    readonly currency: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
   }
@@ -2408,6 +2525,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BudgetScalarFieldEnum | BudgetScalarFieldEnum[]
+  }
+
+  /**
+   * User.categoryBudgets
+   */
+  export type User$categoryBudgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    where?: CategoryBudgetWhereInput
+    orderBy?: CategoryBudgetOrderByWithRelationInput | CategoryBudgetOrderByWithRelationInput[]
+    cursor?: CategoryBudgetWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: CategoryBudgetScalarFieldEnum | CategoryBudgetScalarFieldEnum[]
   }
 
   /**
@@ -4834,6 +4975,1124 @@ export namespace Prisma {
 
 
   /**
+   * Model CategoryBudget
+   */
+
+  export type AggregateCategoryBudget = {
+    _count: CategoryBudgetCountAggregateOutputType | null
+    _avg: CategoryBudgetAvgAggregateOutputType | null
+    _sum: CategoryBudgetSumAggregateOutputType | null
+    _min: CategoryBudgetMinAggregateOutputType | null
+    _max: CategoryBudgetMaxAggregateOutputType | null
+  }
+
+  export type CategoryBudgetAvgAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type CategoryBudgetSumAggregateOutputType = {
+    amount: Decimal | null
+  }
+
+  export type CategoryBudgetMinAggregateOutputType = {
+    id: string | null
+    category: string | null
+    amount: Decimal | null
+    lastAlertSent: Date | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CategoryBudgetMaxAggregateOutputType = {
+    id: string | null
+    category: string | null
+    amount: Decimal | null
+    lastAlertSent: Date | null
+    userId: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type CategoryBudgetCountAggregateOutputType = {
+    id: number
+    category: number
+    amount: number
+    lastAlertSent: number
+    userId: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type CategoryBudgetAvgAggregateInputType = {
+    amount?: true
+  }
+
+  export type CategoryBudgetSumAggregateInputType = {
+    amount?: true
+  }
+
+  export type CategoryBudgetMinAggregateInputType = {
+    id?: true
+    category?: true
+    amount?: true
+    lastAlertSent?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CategoryBudgetMaxAggregateInputType = {
+    id?: true
+    category?: true
+    amount?: true
+    lastAlertSent?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type CategoryBudgetCountAggregateInputType = {
+    id?: true
+    category?: true
+    amount?: true
+    lastAlertSent?: true
+    userId?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type CategoryBudgetAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CategoryBudget to aggregate.
+     */
+    where?: CategoryBudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CategoryBudgets to fetch.
+     */
+    orderBy?: CategoryBudgetOrderByWithRelationInput | CategoryBudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: CategoryBudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CategoryBudgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CategoryBudgets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned CategoryBudgets
+    **/
+    _count?: true | CategoryBudgetCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: CategoryBudgetAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: CategoryBudgetSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: CategoryBudgetMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: CategoryBudgetMaxAggregateInputType
+  }
+
+  export type GetCategoryBudgetAggregateType<T extends CategoryBudgetAggregateArgs> = {
+        [P in keyof T & keyof AggregateCategoryBudget]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateCategoryBudget[P]>
+      : GetScalarType<T[P], AggregateCategoryBudget[P]>
+  }
+
+
+
+
+  export type CategoryBudgetGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: CategoryBudgetWhereInput
+    orderBy?: CategoryBudgetOrderByWithAggregationInput | CategoryBudgetOrderByWithAggregationInput[]
+    by: CategoryBudgetScalarFieldEnum[] | CategoryBudgetScalarFieldEnum
+    having?: CategoryBudgetScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: CategoryBudgetCountAggregateInputType | true
+    _avg?: CategoryBudgetAvgAggregateInputType
+    _sum?: CategoryBudgetSumAggregateInputType
+    _min?: CategoryBudgetMinAggregateInputType
+    _max?: CategoryBudgetMaxAggregateInputType
+  }
+
+  export type CategoryBudgetGroupByOutputType = {
+    id: string
+    category: string
+    amount: Decimal
+    lastAlertSent: Date | null
+    userId: string
+    createdAt: Date
+    updatedAt: Date
+    _count: CategoryBudgetCountAggregateOutputType | null
+    _avg: CategoryBudgetAvgAggregateOutputType | null
+    _sum: CategoryBudgetSumAggregateOutputType | null
+    _min: CategoryBudgetMinAggregateOutputType | null
+    _max: CategoryBudgetMaxAggregateOutputType | null
+  }
+
+  type GetCategoryBudgetGroupByPayload<T extends CategoryBudgetGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<CategoryBudgetGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof CategoryBudgetGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], CategoryBudgetGroupByOutputType[P]>
+            : GetScalarType<T[P], CategoryBudgetGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type CategoryBudgetSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    category?: boolean
+    amount?: boolean
+    lastAlertSent?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["categoryBudget"]>
+
+  export type CategoryBudgetSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    category?: boolean
+    amount?: boolean
+    lastAlertSent?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["categoryBudget"]>
+
+  export type CategoryBudgetSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    category?: boolean
+    amount?: boolean
+    lastAlertSent?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["categoryBudget"]>
+
+  export type CategoryBudgetSelectScalar = {
+    id?: boolean
+    category?: boolean
+    amount?: boolean
+    lastAlertSent?: boolean
+    userId?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type CategoryBudgetOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "category" | "amount" | "lastAlertSent" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["categoryBudget"]>
+  export type CategoryBudgetInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type CategoryBudgetIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type CategoryBudgetIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $CategoryBudgetPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "CategoryBudget"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      category: string
+      amount: Prisma.Decimal
+      lastAlertSent: Date | null
+      userId: string
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["categoryBudget"]>
+    composites: {}
+  }
+
+  type CategoryBudgetGetPayload<S extends boolean | null | undefined | CategoryBudgetDefaultArgs> = $Result.GetResult<Prisma.$CategoryBudgetPayload, S>
+
+  type CategoryBudgetCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<CategoryBudgetFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: CategoryBudgetCountAggregateInputType | true
+    }
+
+  export interface CategoryBudgetDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['CategoryBudget'], meta: { name: 'CategoryBudget' } }
+    /**
+     * Find zero or one CategoryBudget that matches the filter.
+     * @param {CategoryBudgetFindUniqueArgs} args - Arguments to find a CategoryBudget
+     * @example
+     * // Get one CategoryBudget
+     * const categoryBudget = await prisma.categoryBudget.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends CategoryBudgetFindUniqueArgs>(args: SelectSubset<T, CategoryBudgetFindUniqueArgs<ExtArgs>>): Prisma__CategoryBudgetClient<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one CategoryBudget that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {CategoryBudgetFindUniqueOrThrowArgs} args - Arguments to find a CategoryBudget
+     * @example
+     * // Get one CategoryBudget
+     * const categoryBudget = await prisma.categoryBudget.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends CategoryBudgetFindUniqueOrThrowArgs>(args: SelectSubset<T, CategoryBudgetFindUniqueOrThrowArgs<ExtArgs>>): Prisma__CategoryBudgetClient<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CategoryBudget that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryBudgetFindFirstArgs} args - Arguments to find a CategoryBudget
+     * @example
+     * // Get one CategoryBudget
+     * const categoryBudget = await prisma.categoryBudget.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends CategoryBudgetFindFirstArgs>(args?: SelectSubset<T, CategoryBudgetFindFirstArgs<ExtArgs>>): Prisma__CategoryBudgetClient<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first CategoryBudget that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryBudgetFindFirstOrThrowArgs} args - Arguments to find a CategoryBudget
+     * @example
+     * // Get one CategoryBudget
+     * const categoryBudget = await prisma.categoryBudget.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends CategoryBudgetFindFirstOrThrowArgs>(args?: SelectSubset<T, CategoryBudgetFindFirstOrThrowArgs<ExtArgs>>): Prisma__CategoryBudgetClient<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more CategoryBudgets that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryBudgetFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all CategoryBudgets
+     * const categoryBudgets = await prisma.categoryBudget.findMany()
+     * 
+     * // Get first 10 CategoryBudgets
+     * const categoryBudgets = await prisma.categoryBudget.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const categoryBudgetWithIdOnly = await prisma.categoryBudget.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends CategoryBudgetFindManyArgs>(args?: SelectSubset<T, CategoryBudgetFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a CategoryBudget.
+     * @param {CategoryBudgetCreateArgs} args - Arguments to create a CategoryBudget.
+     * @example
+     * // Create one CategoryBudget
+     * const CategoryBudget = await prisma.categoryBudget.create({
+     *   data: {
+     *     // ... data to create a CategoryBudget
+     *   }
+     * })
+     * 
+     */
+    create<T extends CategoryBudgetCreateArgs>(args: SelectSubset<T, CategoryBudgetCreateArgs<ExtArgs>>): Prisma__CategoryBudgetClient<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many CategoryBudgets.
+     * @param {CategoryBudgetCreateManyArgs} args - Arguments to create many CategoryBudgets.
+     * @example
+     * // Create many CategoryBudgets
+     * const categoryBudget = await prisma.categoryBudget.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends CategoryBudgetCreateManyArgs>(args?: SelectSubset<T, CategoryBudgetCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many CategoryBudgets and returns the data saved in the database.
+     * @param {CategoryBudgetCreateManyAndReturnArgs} args - Arguments to create many CategoryBudgets.
+     * @example
+     * // Create many CategoryBudgets
+     * const categoryBudget = await prisma.categoryBudget.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many CategoryBudgets and only return the `id`
+     * const categoryBudgetWithIdOnly = await prisma.categoryBudget.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends CategoryBudgetCreateManyAndReturnArgs>(args?: SelectSubset<T, CategoryBudgetCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a CategoryBudget.
+     * @param {CategoryBudgetDeleteArgs} args - Arguments to delete one CategoryBudget.
+     * @example
+     * // Delete one CategoryBudget
+     * const CategoryBudget = await prisma.categoryBudget.delete({
+     *   where: {
+     *     // ... filter to delete one CategoryBudget
+     *   }
+     * })
+     * 
+     */
+    delete<T extends CategoryBudgetDeleteArgs>(args: SelectSubset<T, CategoryBudgetDeleteArgs<ExtArgs>>): Prisma__CategoryBudgetClient<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one CategoryBudget.
+     * @param {CategoryBudgetUpdateArgs} args - Arguments to update one CategoryBudget.
+     * @example
+     * // Update one CategoryBudget
+     * const categoryBudget = await prisma.categoryBudget.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends CategoryBudgetUpdateArgs>(args: SelectSubset<T, CategoryBudgetUpdateArgs<ExtArgs>>): Prisma__CategoryBudgetClient<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more CategoryBudgets.
+     * @param {CategoryBudgetDeleteManyArgs} args - Arguments to filter CategoryBudgets to delete.
+     * @example
+     * // Delete a few CategoryBudgets
+     * const { count } = await prisma.categoryBudget.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends CategoryBudgetDeleteManyArgs>(args?: SelectSubset<T, CategoryBudgetDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CategoryBudgets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryBudgetUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many CategoryBudgets
+     * const categoryBudget = await prisma.categoryBudget.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends CategoryBudgetUpdateManyArgs>(args: SelectSubset<T, CategoryBudgetUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more CategoryBudgets and returns the data updated in the database.
+     * @param {CategoryBudgetUpdateManyAndReturnArgs} args - Arguments to update many CategoryBudgets.
+     * @example
+     * // Update many CategoryBudgets
+     * const categoryBudget = await prisma.categoryBudget.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more CategoryBudgets and only return the `id`
+     * const categoryBudgetWithIdOnly = await prisma.categoryBudget.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends CategoryBudgetUpdateManyAndReturnArgs>(args: SelectSubset<T, CategoryBudgetUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one CategoryBudget.
+     * @param {CategoryBudgetUpsertArgs} args - Arguments to update or create a CategoryBudget.
+     * @example
+     * // Update or create a CategoryBudget
+     * const categoryBudget = await prisma.categoryBudget.upsert({
+     *   create: {
+     *     // ... data to create a CategoryBudget
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the CategoryBudget we want to update
+     *   }
+     * })
+     */
+    upsert<T extends CategoryBudgetUpsertArgs>(args: SelectSubset<T, CategoryBudgetUpsertArgs<ExtArgs>>): Prisma__CategoryBudgetClient<$Result.GetResult<Prisma.$CategoryBudgetPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of CategoryBudgets.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryBudgetCountArgs} args - Arguments to filter CategoryBudgets to count.
+     * @example
+     * // Count the number of CategoryBudgets
+     * const count = await prisma.categoryBudget.count({
+     *   where: {
+     *     // ... the filter for the CategoryBudgets we want to count
+     *   }
+     * })
+    **/
+    count<T extends CategoryBudgetCountArgs>(
+      args?: Subset<T, CategoryBudgetCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], CategoryBudgetCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a CategoryBudget.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryBudgetAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends CategoryBudgetAggregateArgs>(args: Subset<T, CategoryBudgetAggregateArgs>): Prisma.PrismaPromise<GetCategoryBudgetAggregateType<T>>
+
+    /**
+     * Group by CategoryBudget.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {CategoryBudgetGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends CategoryBudgetGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: CategoryBudgetGroupByArgs['orderBy'] }
+        : { orderBy?: CategoryBudgetGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, CategoryBudgetGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetCategoryBudgetGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the CategoryBudget model
+   */
+  readonly fields: CategoryBudgetFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for CategoryBudget.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__CategoryBudgetClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the CategoryBudget model
+   */
+  interface CategoryBudgetFieldRefs {
+    readonly id: FieldRef<"CategoryBudget", 'String'>
+    readonly category: FieldRef<"CategoryBudget", 'String'>
+    readonly amount: FieldRef<"CategoryBudget", 'Decimal'>
+    readonly lastAlertSent: FieldRef<"CategoryBudget", 'DateTime'>
+    readonly userId: FieldRef<"CategoryBudget", 'String'>
+    readonly createdAt: FieldRef<"CategoryBudget", 'DateTime'>
+    readonly updatedAt: FieldRef<"CategoryBudget", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * CategoryBudget findUnique
+   */
+  export type CategoryBudgetFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryBudget to fetch.
+     */
+    where: CategoryBudgetWhereUniqueInput
+  }
+
+  /**
+   * CategoryBudget findUniqueOrThrow
+   */
+  export type CategoryBudgetFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryBudget to fetch.
+     */
+    where: CategoryBudgetWhereUniqueInput
+  }
+
+  /**
+   * CategoryBudget findFirst
+   */
+  export type CategoryBudgetFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryBudget to fetch.
+     */
+    where?: CategoryBudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CategoryBudgets to fetch.
+     */
+    orderBy?: CategoryBudgetOrderByWithRelationInput | CategoryBudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CategoryBudgets.
+     */
+    cursor?: CategoryBudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CategoryBudgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CategoryBudgets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CategoryBudgets.
+     */
+    distinct?: CategoryBudgetScalarFieldEnum | CategoryBudgetScalarFieldEnum[]
+  }
+
+  /**
+   * CategoryBudget findFirstOrThrow
+   */
+  export type CategoryBudgetFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryBudget to fetch.
+     */
+    where?: CategoryBudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CategoryBudgets to fetch.
+     */
+    orderBy?: CategoryBudgetOrderByWithRelationInput | CategoryBudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for CategoryBudgets.
+     */
+    cursor?: CategoryBudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CategoryBudgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CategoryBudgets.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of CategoryBudgets.
+     */
+    distinct?: CategoryBudgetScalarFieldEnum | CategoryBudgetScalarFieldEnum[]
+  }
+
+  /**
+   * CategoryBudget findMany
+   */
+  export type CategoryBudgetFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    /**
+     * Filter, which CategoryBudgets to fetch.
+     */
+    where?: CategoryBudgetWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of CategoryBudgets to fetch.
+     */
+    orderBy?: CategoryBudgetOrderByWithRelationInput | CategoryBudgetOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing CategoryBudgets.
+     */
+    cursor?: CategoryBudgetWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` CategoryBudgets from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` CategoryBudgets.
+     */
+    skip?: number
+    distinct?: CategoryBudgetScalarFieldEnum | CategoryBudgetScalarFieldEnum[]
+  }
+
+  /**
+   * CategoryBudget create
+   */
+  export type CategoryBudgetCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    /**
+     * The data needed to create a CategoryBudget.
+     */
+    data: XOR<CategoryBudgetCreateInput, CategoryBudgetUncheckedCreateInput>
+  }
+
+  /**
+   * CategoryBudget createMany
+   */
+  export type CategoryBudgetCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many CategoryBudgets.
+     */
+    data: CategoryBudgetCreateManyInput | CategoryBudgetCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * CategoryBudget createManyAndReturn
+   */
+  export type CategoryBudgetCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * The data used to create many CategoryBudgets.
+     */
+    data: CategoryBudgetCreateManyInput | CategoryBudgetCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CategoryBudget update
+   */
+  export type CategoryBudgetUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    /**
+     * The data needed to update a CategoryBudget.
+     */
+    data: XOR<CategoryBudgetUpdateInput, CategoryBudgetUncheckedUpdateInput>
+    /**
+     * Choose, which CategoryBudget to update.
+     */
+    where: CategoryBudgetWhereUniqueInput
+  }
+
+  /**
+   * CategoryBudget updateMany
+   */
+  export type CategoryBudgetUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update CategoryBudgets.
+     */
+    data: XOR<CategoryBudgetUpdateManyMutationInput, CategoryBudgetUncheckedUpdateManyInput>
+    /**
+     * Filter which CategoryBudgets to update
+     */
+    where?: CategoryBudgetWhereInput
+    /**
+     * Limit how many CategoryBudgets to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * CategoryBudget updateManyAndReturn
+   */
+  export type CategoryBudgetUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * The data used to update CategoryBudgets.
+     */
+    data: XOR<CategoryBudgetUpdateManyMutationInput, CategoryBudgetUncheckedUpdateManyInput>
+    /**
+     * Filter which CategoryBudgets to update
+     */
+    where?: CategoryBudgetWhereInput
+    /**
+     * Limit how many CategoryBudgets to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * CategoryBudget upsert
+   */
+  export type CategoryBudgetUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    /**
+     * The filter to search for the CategoryBudget to update in case it exists.
+     */
+    where: CategoryBudgetWhereUniqueInput
+    /**
+     * In case the CategoryBudget found by the `where` argument doesn't exist, create a new CategoryBudget with this data.
+     */
+    create: XOR<CategoryBudgetCreateInput, CategoryBudgetUncheckedCreateInput>
+    /**
+     * In case the CategoryBudget was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<CategoryBudgetUpdateInput, CategoryBudgetUncheckedUpdateInput>
+  }
+
+  /**
+   * CategoryBudget delete
+   */
+  export type CategoryBudgetDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+    /**
+     * Filter which CategoryBudget to delete.
+     */
+    where: CategoryBudgetWhereUniqueInput
+  }
+
+  /**
+   * CategoryBudget deleteMany
+   */
+  export type CategoryBudgetDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which CategoryBudgets to delete
+     */
+    where?: CategoryBudgetWhereInput
+    /**
+     * Limit how many CategoryBudgets to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * CategoryBudget without action
+   */
+  export type CategoryBudgetDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the CategoryBudget
+     */
+    select?: CategoryBudgetSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the CategoryBudget
+     */
+    omit?: CategoryBudgetOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: CategoryBudgetInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Budget
    */
 
@@ -5958,6 +7217,7 @@ export namespace Prisma {
     email: 'email',
     name: 'name',
     imageUrl: 'imageUrl',
+    currency: 'currency',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -5999,6 +7259,19 @@ export namespace Prisma {
   };
 
   export type TransactionScalarFieldEnum = (typeof TransactionScalarFieldEnum)[keyof typeof TransactionScalarFieldEnum]
+
+
+  export const CategoryBudgetScalarFieldEnum: {
+    id: 'id',
+    category: 'category',
+    amount: 'amount',
+    lastAlertSent: 'lastAlertSent',
+    userId: 'userId',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type CategoryBudgetScalarFieldEnum = (typeof CategoryBudgetScalarFieldEnum)[keyof typeof CategoryBudgetScalarFieldEnum]
 
 
   export const BudgetScalarFieldEnum: {
@@ -6173,11 +7446,13 @@ export namespace Prisma {
     email?: StringFilter<"User"> | string
     name?: StringNullableFilter<"User"> | string | null
     imageUrl?: StringNullableFilter<"User"> | string | null
+    currency?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     transactions?: TransactionListRelationFilter
     accounts?: AccountListRelationFilter
     budgets?: BudgetListRelationFilter
+    categoryBudgets?: CategoryBudgetListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -6186,11 +7461,13 @@ export namespace Prisma {
     email?: SortOrder
     name?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
+    currency?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     transactions?: TransactionOrderByRelationAggregateInput
     accounts?: AccountOrderByRelationAggregateInput
     budgets?: BudgetOrderByRelationAggregateInput
+    categoryBudgets?: CategoryBudgetOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -6202,11 +7479,13 @@ export namespace Prisma {
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringNullableFilter<"User"> | string | null
     imageUrl?: StringNullableFilter<"User"> | string | null
+    currency?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     transactions?: TransactionListRelationFilter
     accounts?: AccountListRelationFilter
     budgets?: BudgetListRelationFilter
+    categoryBudgets?: CategoryBudgetListRelationFilter
   }, "id" | "clerkUserId" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -6215,6 +7494,7 @@ export namespace Prisma {
     email?: SortOrder
     name?: SortOrderInput | SortOrder
     imageUrl?: SortOrderInput | SortOrder
+    currency?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
@@ -6231,6 +7511,7 @@ export namespace Prisma {
     email?: StringWithAggregatesFilter<"User"> | string
     name?: StringNullableWithAggregatesFilter<"User"> | string | null
     imageUrl?: StringNullableWithAggregatesFilter<"User"> | string | null
+    currency?: StringWithAggregatesFilter<"User"> | string
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
   }
@@ -6425,6 +7706,74 @@ export namespace Prisma {
     updatedAt?: DateTimeWithAggregatesFilter<"Transaction"> | Date | string
   }
 
+  export type CategoryBudgetWhereInput = {
+    AND?: CategoryBudgetWhereInput | CategoryBudgetWhereInput[]
+    OR?: CategoryBudgetWhereInput[]
+    NOT?: CategoryBudgetWhereInput | CategoryBudgetWhereInput[]
+    id?: StringFilter<"CategoryBudget"> | string
+    category?: StringFilter<"CategoryBudget"> | string
+    amount?: DecimalFilter<"CategoryBudget"> | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: DateTimeNullableFilter<"CategoryBudget"> | Date | string | null
+    userId?: StringFilter<"CategoryBudget"> | string
+    createdAt?: DateTimeFilter<"CategoryBudget"> | Date | string
+    updatedAt?: DateTimeFilter<"CategoryBudget"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type CategoryBudgetOrderByWithRelationInput = {
+    id?: SortOrder
+    category?: SortOrder
+    amount?: SortOrder
+    lastAlertSent?: SortOrderInput | SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type CategoryBudgetWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    userId_category?: CategoryBudgetUserIdCategoryCompoundUniqueInput
+    AND?: CategoryBudgetWhereInput | CategoryBudgetWhereInput[]
+    OR?: CategoryBudgetWhereInput[]
+    NOT?: CategoryBudgetWhereInput | CategoryBudgetWhereInput[]
+    category?: StringFilter<"CategoryBudget"> | string
+    amount?: DecimalFilter<"CategoryBudget"> | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: DateTimeNullableFilter<"CategoryBudget"> | Date | string | null
+    userId?: StringFilter<"CategoryBudget"> | string
+    createdAt?: DateTimeFilter<"CategoryBudget"> | Date | string
+    updatedAt?: DateTimeFilter<"CategoryBudget"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "userId_category">
+
+  export type CategoryBudgetOrderByWithAggregationInput = {
+    id?: SortOrder
+    category?: SortOrder
+    amount?: SortOrder
+    lastAlertSent?: SortOrderInput | SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: CategoryBudgetCountOrderByAggregateInput
+    _avg?: CategoryBudgetAvgOrderByAggregateInput
+    _max?: CategoryBudgetMaxOrderByAggregateInput
+    _min?: CategoryBudgetMinOrderByAggregateInput
+    _sum?: CategoryBudgetSumOrderByAggregateInput
+  }
+
+  export type CategoryBudgetScalarWhereWithAggregatesInput = {
+    AND?: CategoryBudgetScalarWhereWithAggregatesInput | CategoryBudgetScalarWhereWithAggregatesInput[]
+    OR?: CategoryBudgetScalarWhereWithAggregatesInput[]
+    NOT?: CategoryBudgetScalarWhereWithAggregatesInput | CategoryBudgetScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"CategoryBudget"> | string
+    category?: StringWithAggregatesFilter<"CategoryBudget"> | string
+    amount?: DecimalWithAggregatesFilter<"CategoryBudget"> | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: DateTimeNullableWithAggregatesFilter<"CategoryBudget"> | Date | string | null
+    userId?: StringWithAggregatesFilter<"CategoryBudget"> | string
+    createdAt?: DateTimeWithAggregatesFilter<"CategoryBudget"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"CategoryBudget"> | Date | string
+  }
+
   export type BudgetWhereInput = {
     AND?: BudgetWhereInput | BudgetWhereInput[]
     OR?: BudgetWhereInput[]
@@ -6493,11 +7842,13 @@ export namespace Prisma {
     email: string
     name?: string | null
     imageUrl?: string | null
+    currency?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
     budgets?: BudgetCreateNestedManyWithoutUserInput
+    categoryBudgets?: CategoryBudgetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -6506,11 +7857,13 @@ export namespace Prisma {
     email: string
     name?: string | null
     imageUrl?: string | null
+    currency?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     budgets?: BudgetUncheckedCreateNestedManyWithoutUserInput
+    categoryBudgets?: CategoryBudgetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -6519,11 +7872,13 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
     budgets?: BudgetUpdateManyWithoutUserNestedInput
+    categoryBudgets?: CategoryBudgetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -6532,11 +7887,13 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     budgets?: BudgetUncheckedUpdateManyWithoutUserNestedInput
+    categoryBudgets?: CategoryBudgetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -6545,6 +7902,7 @@ export namespace Prisma {
     email: string
     name?: string | null
     imageUrl?: string | null
+    currency?: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -6555,6 +7913,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6565,6 +7924,7 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -6780,6 +8140,75 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type CategoryBudgetCreateInput = {
+    id?: string
+    category: string
+    amount: Decimal | DecimalJsLike | number | string
+    lastAlertSent?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    user: UserCreateNestedOneWithoutCategoryBudgetsInput
+  }
+
+  export type CategoryBudgetUncheckedCreateInput = {
+    id?: string
+    category: string
+    amount: Decimal | DecimalJsLike | number | string
+    lastAlertSent?: Date | string | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CategoryBudgetUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutCategoryBudgetsNestedInput
+  }
+
+  export type CategoryBudgetUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryBudgetCreateManyInput = {
+    id?: string
+    category: string
+    amount: Decimal | DecimalJsLike | number | string
+    lastAlertSent?: Date | string | null
+    userId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CategoryBudgetUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryBudgetUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    userId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type BudgetCreateInput = {
     id?: string
     amount: Decimal | DecimalJsLike | number | string
@@ -6901,6 +8330,12 @@ export namespace Prisma {
     none?: BudgetWhereInput
   }
 
+  export type CategoryBudgetListRelationFilter = {
+    every?: CategoryBudgetWhereInput
+    some?: CategoryBudgetWhereInput
+    none?: CategoryBudgetWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -6918,12 +8353,17 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
+  export type CategoryBudgetOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type UserCountOrderByAggregateInput = {
     id?: SortOrder
     clerkUserId?: SortOrder
     email?: SortOrder
     name?: SortOrder
     imageUrl?: SortOrder
+    currency?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6934,6 +8374,7 @@ export namespace Prisma {
     email?: SortOrder
     name?: SortOrder
     imageUrl?: SortOrder
+    currency?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -6944,6 +8385,7 @@ export namespace Prisma {
     email?: SortOrder
     name?: SortOrder
     imageUrl?: SortOrder
+    currency?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -7247,6 +8689,49 @@ export namespace Prisma {
     _max?: NestedEnumTransactionStatusFilter<$PrismaModel>
   }
 
+  export type CategoryBudgetUserIdCategoryCompoundUniqueInput = {
+    userId: string
+    category: string
+  }
+
+  export type CategoryBudgetCountOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    amount?: SortOrder
+    lastAlertSent?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CategoryBudgetAvgOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
+  export type CategoryBudgetMaxOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    amount?: SortOrder
+    lastAlertSent?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CategoryBudgetMinOrderByAggregateInput = {
+    id?: SortOrder
+    category?: SortOrder
+    amount?: SortOrder
+    lastAlertSent?: SortOrder
+    userId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type CategoryBudgetSumOrderByAggregateInput = {
+    amount?: SortOrder
+  }
+
   export type BudgetCountOrderByAggregateInput = {
     id?: SortOrder
     amount?: SortOrder
@@ -7303,6 +8788,13 @@ export namespace Prisma {
     connect?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
   }
 
+  export type CategoryBudgetCreateNestedManyWithoutUserInput = {
+    create?: XOR<CategoryBudgetCreateWithoutUserInput, CategoryBudgetUncheckedCreateWithoutUserInput> | CategoryBudgetCreateWithoutUserInput[] | CategoryBudgetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CategoryBudgetCreateOrConnectWithoutUserInput | CategoryBudgetCreateOrConnectWithoutUserInput[]
+    createMany?: CategoryBudgetCreateManyUserInputEnvelope
+    connect?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
+  }
+
   export type TransactionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<TransactionCreateWithoutUserInput, TransactionUncheckedCreateWithoutUserInput> | TransactionCreateWithoutUserInput[] | TransactionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TransactionCreateOrConnectWithoutUserInput | TransactionCreateOrConnectWithoutUserInput[]
@@ -7322,6 +8814,13 @@ export namespace Prisma {
     connectOrCreate?: BudgetCreateOrConnectWithoutUserInput | BudgetCreateOrConnectWithoutUserInput[]
     createMany?: BudgetCreateManyUserInputEnvelope
     connect?: BudgetWhereUniqueInput | BudgetWhereUniqueInput[]
+  }
+
+  export type CategoryBudgetUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<CategoryBudgetCreateWithoutUserInput, CategoryBudgetUncheckedCreateWithoutUserInput> | CategoryBudgetCreateWithoutUserInput[] | CategoryBudgetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CategoryBudgetCreateOrConnectWithoutUserInput | CategoryBudgetCreateOrConnectWithoutUserInput[]
+    createMany?: CategoryBudgetCreateManyUserInputEnvelope
+    connect?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -7378,6 +8877,20 @@ export namespace Prisma {
     deleteMany?: BudgetScalarWhereInput | BudgetScalarWhereInput[]
   }
 
+  export type CategoryBudgetUpdateManyWithoutUserNestedInput = {
+    create?: XOR<CategoryBudgetCreateWithoutUserInput, CategoryBudgetUncheckedCreateWithoutUserInput> | CategoryBudgetCreateWithoutUserInput[] | CategoryBudgetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CategoryBudgetCreateOrConnectWithoutUserInput | CategoryBudgetCreateOrConnectWithoutUserInput[]
+    upsert?: CategoryBudgetUpsertWithWhereUniqueWithoutUserInput | CategoryBudgetUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: CategoryBudgetCreateManyUserInputEnvelope
+    set?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
+    disconnect?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
+    delete?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
+    connect?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
+    update?: CategoryBudgetUpdateWithWhereUniqueWithoutUserInput | CategoryBudgetUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: CategoryBudgetUpdateManyWithWhereWithoutUserInput | CategoryBudgetUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: CategoryBudgetScalarWhereInput | CategoryBudgetScalarWhereInput[]
+  }
+
   export type TransactionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<TransactionCreateWithoutUserInput, TransactionUncheckedCreateWithoutUserInput> | TransactionCreateWithoutUserInput[] | TransactionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: TransactionCreateOrConnectWithoutUserInput | TransactionCreateOrConnectWithoutUserInput[]
@@ -7418,6 +8931,20 @@ export namespace Prisma {
     update?: BudgetUpdateWithWhereUniqueWithoutUserInput | BudgetUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: BudgetUpdateManyWithWhereWithoutUserInput | BudgetUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: BudgetScalarWhereInput | BudgetScalarWhereInput[]
+  }
+
+  export type CategoryBudgetUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<CategoryBudgetCreateWithoutUserInput, CategoryBudgetUncheckedCreateWithoutUserInput> | CategoryBudgetCreateWithoutUserInput[] | CategoryBudgetUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: CategoryBudgetCreateOrConnectWithoutUserInput | CategoryBudgetCreateOrConnectWithoutUserInput[]
+    upsert?: CategoryBudgetUpsertWithWhereUniqueWithoutUserInput | CategoryBudgetUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: CategoryBudgetCreateManyUserInputEnvelope
+    set?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
+    disconnect?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
+    delete?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
+    connect?: CategoryBudgetWhereUniqueInput | CategoryBudgetWhereUniqueInput[]
+    update?: CategoryBudgetUpdateWithWhereUniqueWithoutUserInput | CategoryBudgetUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: CategoryBudgetUpdateManyWithWhereWithoutUserInput | CategoryBudgetUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: CategoryBudgetScalarWhereInput | CategoryBudgetScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutAccountsInput = {
@@ -7534,6 +9061,20 @@ export namespace Prisma {
     upsert?: AccountUpsertWithoutTransactionsInput
     connect?: AccountWhereUniqueInput
     update?: XOR<XOR<AccountUpdateToOneWithWhereWithoutTransactionsInput, AccountUpdateWithoutTransactionsInput>, AccountUncheckedUpdateWithoutTransactionsInput>
+  }
+
+  export type UserCreateNestedOneWithoutCategoryBudgetsInput = {
+    create?: XOR<UserCreateWithoutCategoryBudgetsInput, UserUncheckedCreateWithoutCategoryBudgetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCategoryBudgetsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutCategoryBudgetsNestedInput = {
+    create?: XOR<UserCreateWithoutCategoryBudgetsInput, UserUncheckedCreateWithoutCategoryBudgetsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutCategoryBudgetsInput
+    upsert?: UserUpsertWithoutCategoryBudgetsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutCategoryBudgetsInput, UserUpdateWithoutCategoryBudgetsInput>, UserUncheckedUpdateWithoutCategoryBudgetsInput>
   }
 
   export type UserCreateNestedOneWithoutBudgetsInput = {
@@ -7896,6 +9437,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type CategoryBudgetCreateWithoutUserInput = {
+    id?: string
+    category: string
+    amount: Decimal | DecimalJsLike | number | string
+    lastAlertSent?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CategoryBudgetUncheckedCreateWithoutUserInput = {
+    id?: string
+    category: string
+    amount: Decimal | DecimalJsLike | number | string
+    lastAlertSent?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CategoryBudgetCreateOrConnectWithoutUserInput = {
+    where: CategoryBudgetWhereUniqueInput
+    create: XOR<CategoryBudgetCreateWithoutUserInput, CategoryBudgetUncheckedCreateWithoutUserInput>
+  }
+
+  export type CategoryBudgetCreateManyUserInputEnvelope = {
+    data: CategoryBudgetCreateManyUserInput | CategoryBudgetCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type TransactionUpsertWithWhereUniqueWithoutUserInput = {
     where: TransactionWhereUniqueInput
     update: XOR<TransactionUpdateWithoutUserInput, TransactionUncheckedUpdateWithoutUserInput>
@@ -7992,16 +9561,47 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Budget"> | Date | string
   }
 
+  export type CategoryBudgetUpsertWithWhereUniqueWithoutUserInput = {
+    where: CategoryBudgetWhereUniqueInput
+    update: XOR<CategoryBudgetUpdateWithoutUserInput, CategoryBudgetUncheckedUpdateWithoutUserInput>
+    create: XOR<CategoryBudgetCreateWithoutUserInput, CategoryBudgetUncheckedCreateWithoutUserInput>
+  }
+
+  export type CategoryBudgetUpdateWithWhereUniqueWithoutUserInput = {
+    where: CategoryBudgetWhereUniqueInput
+    data: XOR<CategoryBudgetUpdateWithoutUserInput, CategoryBudgetUncheckedUpdateWithoutUserInput>
+  }
+
+  export type CategoryBudgetUpdateManyWithWhereWithoutUserInput = {
+    where: CategoryBudgetScalarWhereInput
+    data: XOR<CategoryBudgetUpdateManyMutationInput, CategoryBudgetUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type CategoryBudgetScalarWhereInput = {
+    AND?: CategoryBudgetScalarWhereInput | CategoryBudgetScalarWhereInput[]
+    OR?: CategoryBudgetScalarWhereInput[]
+    NOT?: CategoryBudgetScalarWhereInput | CategoryBudgetScalarWhereInput[]
+    id?: StringFilter<"CategoryBudget"> | string
+    category?: StringFilter<"CategoryBudget"> | string
+    amount?: DecimalFilter<"CategoryBudget"> | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: DateTimeNullableFilter<"CategoryBudget"> | Date | string | null
+    userId?: StringFilter<"CategoryBudget"> | string
+    createdAt?: DateTimeFilter<"CategoryBudget"> | Date | string
+    updatedAt?: DateTimeFilter<"CategoryBudget"> | Date | string
+  }
+
   export type UserCreateWithoutAccountsInput = {
     id?: string
     clerkUserId: string
     email: string
     name?: string | null
     imageUrl?: string | null
+    currency?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionCreateNestedManyWithoutUserInput
     budgets?: BudgetCreateNestedManyWithoutUserInput
+    categoryBudgets?: CategoryBudgetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -8010,10 +9610,12 @@ export namespace Prisma {
     email: string
     name?: string | null
     imageUrl?: string | null
+    currency?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionUncheckedCreateNestedManyWithoutUserInput
     budgets?: BudgetUncheckedCreateNestedManyWithoutUserInput
+    categoryBudgets?: CategoryBudgetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -8084,10 +9686,12 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUpdateManyWithoutUserNestedInput
     budgets?: BudgetUpdateManyWithoutUserNestedInput
+    categoryBudgets?: CategoryBudgetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -8096,10 +9700,12 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     budgets?: BudgetUncheckedUpdateManyWithoutUserNestedInput
+    categoryBudgets?: CategoryBudgetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TransactionUpsertWithWhereUniqueWithoutAccountInput = {
@@ -8124,10 +9730,12 @@ export namespace Prisma {
     email: string
     name?: string | null
     imageUrl?: string | null
+    currency?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountCreateNestedManyWithoutUserInput
     budgets?: BudgetCreateNestedManyWithoutUserInput
+    categoryBudgets?: CategoryBudgetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTransactionsInput = {
@@ -8136,10 +9744,12 @@ export namespace Prisma {
     email: string
     name?: string | null
     imageUrl?: string | null
+    currency?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
     budgets?: BudgetUncheckedCreateNestedManyWithoutUserInput
+    categoryBudgets?: CategoryBudgetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTransactionsInput = {
@@ -8191,10 +9801,12 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUpdateManyWithoutUserNestedInput
     budgets?: BudgetUpdateManyWithoutUserNestedInput
+    categoryBudgets?: CategoryBudgetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTransactionsInput = {
@@ -8203,10 +9815,12 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
     budgets?: BudgetUncheckedUpdateManyWithoutUserNestedInput
+    categoryBudgets?: CategoryBudgetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AccountUpsertWithoutTransactionsInput = {
@@ -8242,16 +9856,90 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserCreateWithoutCategoryBudgetsInput = {
+    id?: string
+    clerkUserId: string
+    email: string
+    name?: string | null
+    imageUrl?: string | null
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    transactions?: TransactionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    budgets?: BudgetCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutCategoryBudgetsInput = {
+    id?: string
+    clerkUserId: string
+    email: string
+    name?: string | null
+    imageUrl?: string | null
+    currency?: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    transactions?: TransactionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    budgets?: BudgetUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutCategoryBudgetsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutCategoryBudgetsInput, UserUncheckedCreateWithoutCategoryBudgetsInput>
+  }
+
+  export type UserUpsertWithoutCategoryBudgetsInput = {
+    update: XOR<UserUpdateWithoutCategoryBudgetsInput, UserUncheckedUpdateWithoutCategoryBudgetsInput>
+    create: XOR<UserCreateWithoutCategoryBudgetsInput, UserUncheckedCreateWithoutCategoryBudgetsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutCategoryBudgetsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutCategoryBudgetsInput, UserUncheckedUpdateWithoutCategoryBudgetsInput>
+  }
+
+  export type UserUpdateWithoutCategoryBudgetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkUserId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    transactions?: TransactionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    budgets?: BudgetUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutCategoryBudgetsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    clerkUserId?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    transactions?: TransactionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    budgets?: BudgetUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type UserCreateWithoutBudgetsInput = {
     id?: string
     clerkUserId: string
     email: string
     name?: string | null
     imageUrl?: string | null
+    currency?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionCreateNestedManyWithoutUserInput
     accounts?: AccountCreateNestedManyWithoutUserInput
+    categoryBudgets?: CategoryBudgetCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBudgetsInput = {
@@ -8260,10 +9948,12 @@ export namespace Prisma {
     email: string
     name?: string | null
     imageUrl?: string | null
+    currency?: string
     createdAt?: Date | string
     updatedAt?: Date | string
     transactions?: TransactionUncheckedCreateNestedManyWithoutUserInput
     accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    categoryBudgets?: CategoryBudgetUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBudgetsInput = {
@@ -8288,10 +9978,12 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUpdateManyWithoutUserNestedInput
     accounts?: AccountUpdateManyWithoutUserNestedInput
+    categoryBudgets?: CategoryBudgetUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBudgetsInput = {
@@ -8300,10 +9992,12 @@ export namespace Prisma {
     email?: StringFieldUpdateOperationsInput | string
     name?: NullableStringFieldUpdateOperationsInput | string | null
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
+    currency?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     transactions?: TransactionUncheckedUpdateManyWithoutUserNestedInput
     accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    categoryBudgets?: CategoryBudgetUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type TransactionCreateManyUserInput = {
@@ -8336,6 +10030,15 @@ export namespace Prisma {
 
   export type BudgetCreateManyUserInput = {
     id?: string
+    amount: Decimal | DecimalJsLike | number | string
+    lastAlertSent?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type CategoryBudgetCreateManyUserInput = {
+    id?: string
+    category: string
     amount: Decimal | DecimalJsLike | number | string
     lastAlertSent?: Date | string | null
     createdAt?: Date | string
@@ -8446,6 +10149,33 @@ export namespace Prisma {
 
   export type BudgetUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryBudgetUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryBudgetUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
+    amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    lastAlertSent?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type CategoryBudgetUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    category?: StringFieldUpdateOperationsInput | string
     amount?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     lastAlertSent?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

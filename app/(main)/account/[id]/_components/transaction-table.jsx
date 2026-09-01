@@ -8,6 +8,7 @@ import {
   Trash,
   Search,
   X,
+  Download,
   ChevronLeft,
   ChevronRight,
   RefreshCw,
@@ -50,11 +51,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { categoryColors } from "@/data/categories";
+import { useCurrency } from "@/components/currency-provider";
 import { bulkDeleteTransactions } from "@/actions/account";
 import useFetch from "@/hooks/use-fetch";
 import { BarLoader } from "react-spinners";
 import { useRouter } from "next/navigation";
-import { mkConfig, generateCsv, download } from "export-to-csv";
 import Papa from "papaparse"; // For generating CSV
 import * as XLSX from "xlsx";
 
@@ -71,6 +72,7 @@ const RECURRING_INTERVALS = {
 };
 
 export function TransactionTable({ transactions }) {
+  const { format: currency, code: currencyCode } = useCurrency();
   const [selectedIds, setSelectedIds] = useState([]);
   const [sortConfig, setSortConfig] = useState({
     field: "date",
@@ -89,8 +91,10 @@ export function TransactionTable({ transactions }) {
     // Apply search filter
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      result = result.filter((transaction) =>
-        transaction.description?.toLowerCase().includes(searchLower)
+      result = result.filter(
+        (transaction) =>
+          transaction.description?.toLowerCase().includes(searchLower) ||
+          transaction.category?.toLowerCase().includes(searchLower)
       );
     }
 
@@ -186,7 +190,10 @@ export function TransactionTable({ transactions }) {
 
   useEffect(() => {
     if (deleted && !deleteLoading) {
-      toast.error("Transactions deleted successfully");
+      // bulkDeleteTransactions already revalidates this route; calling
+      // router.refresh() as well rendered it twice.
+      toast.success("Transactions deleted");
+      setSelectedIds([]);
     }
   }, [deleted, deleteLoading]);
 
@@ -213,6 +220,7 @@ export function TransactionTable({ transactions }) {
         ? transaction.category?.name || ""
         : transaction.category || "",
       Amount: (transaction.type === "EXPENSE" ? "-" : "+") + transaction.amount.toFixed(2),
+      Currency: currencyCode,
       Recurring: transaction.isRecurring
         ? RECURRING_INTERVALS[transaction.recurringInterval] || "Recurring"
         : "One-time",
@@ -241,6 +249,7 @@ export function TransactionTable({ transactions }) {
         ? transaction.category?.name || ""
         : transaction.category || "",
       Amount: (transaction.type === "EXPENSE" ? "-" : "+") + transaction.amount.toFixed(2),
+      Currency: currencyCode,
       Recurring: transaction.isRecurring
         ? RECURRING_INTERVALS[transaction.recurringInterval] || "Recurring"
         : "One-time",
@@ -265,7 +274,7 @@ export function TransactionTable({ transactions }) {
         <BarLoader className="mt-4" width={"100%"} color="#9333ea" />
       )}
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -275,37 +284,39 @@ export function TransactionTable({ transactions }) {
               setSearchTerm(e.target.value);
               setCurrentPage(1);
             }}
-            className="pl-8"
+            className="h-11 pl-8 sm:h-9"
           />
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Select
-            value={typeFilter}
+            value={typeFilter || "all"}
             onValueChange={(value) => {
-              setTypeFilter(value);
+              setTypeFilter(value === "all" ? "" : value);
               setCurrentPage(1);
             }}
           >
-            <SelectTrigger className="w-[130px]">
+            <SelectTrigger className="h-11 flex-1 sm:h-9 sm:w-[130px] sm:flex-none">
               <SelectValue placeholder="All Types" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="INCOME">Income</SelectItem>
               <SelectItem value="EXPENSE">Expense</SelectItem>
             </SelectContent>
           </Select>
 
           <Select
-            value={recurringFilter}
+            value={recurringFilter || "all"}
             onValueChange={(value) => {
-              setRecurringFilter(value);
+              setRecurringFilter(value === "all" ? "" : value);
               setCurrentPage(1);
             }}
           >
-            <SelectTrigger className="w-[130px]">
+            <SelectTrigger className="h-11 flex-1 sm:h-9 sm:w-[150px] sm:flex-none">
               <SelectValue placeholder="All Transactions" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all">All Transactions</SelectItem>
               <SelectItem value="recurring">Recurring Only</SelectItem>
               <SelectItem value="non-recurring">Non-recurring Only</SelectItem>
             </SelectContent>
@@ -315,13 +326,12 @@ export function TransactionTable({ transactions }) {
           {selectedIds.length > 0 && (
             <div className="flex items-center gap-2">
               <Button
-                className="cursor-pointer"
                 variant="destructive"
-                size="sm"
+                className="h-11 cursor-pointer sm:h-9"
                 onClick={handleBulkDelete}
               >
-                <Trash className="h-4 w-4 mr-2" />
-                Delete Selected ({selectedIds.length})
+                <Trash className="size-4" />
+                Delete ({selectedIds.length})
               </Button>
             </div>
           )}
@@ -330,39 +340,37 @@ export function TransactionTable({ transactions }) {
             <Button
               variant="outline"
               size="icon"
+              className="size-11 sm:size-9"
               onClick={handleClearFilters}
               title="Clear filters"
+              aria-label="Clear filters"
             >
-              <X className="h-4 w-5" />
+              <X className="size-4" />
             </Button>
           )}
 
-          <Select
-            value={typeFilter}
-            onValueChange={(value) => {
-              setTypeFilter(value);
-              setCurrentPage(1);
-            }}
-          >
-            <SelectTrigger className="w-[130px]">
-              <SelectValue placeholder="Download" />
-            </SelectTrigger>
-            <SelectContent>
-            <Button variant="outline" size="sm" onClick={handleDownloadCsv}>
-              Download CSV
-            </Button>
-          <Button variant="outline" size="sm" onClick={handleDownloadExcel}>
-            Download Excel
-          </Button>
-
-            </SelectContent>
-          </Select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="h-11 sm:h-9">
+                <Download className="size-4" />
+                <span className="hidden sm:inline">Export</span>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleDownloadCsv}>
+                Download CSV
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleDownloadExcel}>
+                Download Excel
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
 
         </div>
       </div>
 
       {/* Transactions Table */}
-      <div className="rounded-md border">
+      <div className="overflow-x-auto rounded-lg border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -376,8 +384,15 @@ export function TransactionTable({ transactions }) {
                 />
               </TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="hover:text-foreground hidden cursor-pointer select-none sm:table-cell"
                 onClick={() => handleSort("date")}
+                aria-sort={
+                  sortConfig.field === "date"
+                    ? sortConfig.direction === "asc"
+                      ? "ascending"
+                      : "descending"
+                    : "none"
+                }
               >
                 <div className="flex items-center">
                   Date
@@ -391,7 +406,7 @@ export function TransactionTable({ transactions }) {
               </TableHead>
               <TableHead>Description</TableHead>
               <TableHead
-                className="cursor-pointer"
+                className="hover:text-foreground hidden cursor-pointer select-none md:table-cell"
                 onClick={() => handleSort("category")}
               >
                 <div className="flex items-center">
@@ -418,7 +433,7 @@ export function TransactionTable({ transactions }) {
                     ))}
                 </div>
               </TableHead>
-              <TableHead>Recurring</TableHead>
+              <TableHead className="hidden lg:table-cell">Recurring</TableHead>
               <TableHead className="w-[50px]" />
             </TableRow>
           </TableHeader>
@@ -427,54 +442,68 @@ export function TransactionTable({ transactions }) {
               <TableRow>
                 <TableCell
                   colSpan={7}
-                  className="text-center text-muted-foreground"
+                  className="text-muted-foreground h-32 text-center"
                 >
-                  No transactions found
+                  {searchTerm || typeFilter || recurringFilter
+                    ? "No transactions match these filters."
+                    : "No transactions yet."}
                 </TableCell>
               </TableRow>
             ) : (
               paginatedTransactions.map((transaction) => (
-                <TableRow key={transaction.id}>
+                <TableRow key={transaction.id} className="hover:bg-muted/40">
                   <TableCell>
                     <Checkbox
                       checked={selectedIds.includes(transaction.id)}
                       onCheckedChange={() => handleSelect(transaction.id)}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden whitespace-nowrap sm:table-cell">
                     {format(new Date(transaction.date), "PP")}
                   </TableCell>
-                  <TableCell>{transaction.description}</TableCell>
-                  <TableCell className="capitalize">
-                    <span
-                      style={{
-                        background: categoryColors[transaction.category],
-                      }}
-                      className="px-2 py-1 rounded text-white text-sm"
-                    >
+                  <TableCell className="max-w-[160px] sm:max-w-[280px]">
+                    <div className="truncate">
+                      {transaction.description || (
+                        <span className="text-muted-foreground">-</span>
+                      )}
+                    </div>
+                    {/* Date and category are hidden as columns on small screens,
+                        so surface them here instead of losing them. */}
+                    <div className="text-muted-foreground mt-0.5 flex items-center gap-1.5 text-xs sm:hidden">
+                      <span>{format(new Date(transaction.date), "MMM d")}</span>
+                      <span aria-hidden="true">·</span>
+                      <span className="truncate capitalize">
+                        {transaction.category}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell">
+                    <span className="bg-muted inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium capitalize">
+                      <span
+                        aria-hidden="true"
+                        className="size-1.5 rounded-full"
+                        style={{
+                          background: categoryColors[transaction.category],
+                        }}
+                      />
                       {transaction.category}
                     </span>
                   </TableCell>
                   <TableCell
                     className={cn(
-                      "text-right font-medium",
-                      transaction.type === "EXPENSE"
-                        ? "text-red-500"
-                        : "text-green-500"
+                      "text-right font-medium whitespace-nowrap tabular-nums",
+                      transaction.type === "EXPENSE" ? "text-over" : "text-ok"
                     )}
                   >
-                    {transaction.type === "EXPENSE" ? "-" : "+"}$
-                    {transaction.amount.toFixed(2)}
+                    {transaction.type === "EXPENSE" ? "-" : "+"}
+                    {currency(transaction.amount)}
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="hidden lg:table-cell">
                     {transaction.isRecurring ? (
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger>
-                            <Badge
-                              variant="secondary"
-                              className="gap-1 bg-purple-100 text-purple-700 hover:bg-purple-200"
-                            >
+                            <Badge variant="secondary" className="gap-1">
                               <RefreshCw className="h-3 w-3" />
                               {
                                 RECURRING_INTERVALS[
@@ -506,8 +535,12 @@ export function TransactionTable({ transactions }) {
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreHorizontal className="h-4 w-4" />
+                        <Button
+                          variant="ghost"
+                          className="size-11 p-0 sm:size-8"
+                          aria-label="Transaction actions"
+                        >
+                          <MoreHorizontal className="size-4" />
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
@@ -523,7 +556,15 @@ export function TransactionTable({ transactions }) {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="text-destructive"
-                          onClick={() => deleteFn([transaction.id])}
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                "Delete this transaction? This cannot be undone."
+                              )
+                            ) {
+                              deleteFn([transaction.id]);
+                            }
+                          }}
                         >
                           Delete
                         </DropdownMenuItem>
@@ -543,21 +584,26 @@ export function TransactionTable({ transactions }) {
           <Button
             variant="outline"
             size="icon"
+            className="size-11 sm:size-9"
+            aria-label="Previous page"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="size-4" />
           </Button>
-          <span className="text-sm">
-            Page {currentPage} of {totalPages}
+          <span className="text-muted-foreground text-sm tabular-nums">
+            Page {currentPage} of {totalPages} ·{" "}
+            {filteredAndSortedTransactions.length} transactions
           </span>
           <Button
             variant="outline"
             size="icon"
+            className="size-11 sm:size-9"
+            aria-label="Next page"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="size-4" />
           </Button>
         </div>
       )}
