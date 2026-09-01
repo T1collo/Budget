@@ -4,6 +4,7 @@ import { auth } from "@clerk/nextjs/server";
 import { db } from "../lib/prisma";
 import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth-user";
+import { accountSchema } from "@/app/lib/schema";
 
 const serializeTransaction = (obj) => {
     const serialized = { ...obj };
@@ -50,6 +51,15 @@ export async function createAccount(data) {
     //   }
   
       const user = await requireUser();
+  
+      // Validate on the server with the same schema the form uses. The action
+      // spreads `data` into Prisma, so name and type were previously taken on
+      // trust; the client is not the place to enforce either.
+      const parsed = accountSchema.safeParse(data);
+      if (!parsed.success) {
+        throw new Error(parsed.error.issues[0]?.message || "Invalid account");
+      }
+      data = parsed.data;
   
       // Convert balance to float before saving
       const balanceFloat = parseFloat(data.balance);

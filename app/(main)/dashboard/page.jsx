@@ -5,6 +5,7 @@ import { AccountCard } from "./_components/AccountCard";
 import CreateAccount from "@/components/CreateAccount";
 import { BudgetProgress } from "./_components/budget-progress";
 import { CategoryBudgets } from "./_components/category-budgets";
+import { NetWorthSummary } from "./_components/net-worth-summary";
 import { DashboardOverview } from "./_components/transaction-overview";
 import { Card, CardContent } from "@/components/ui/card";
 import { Plus } from "lucide-react";
@@ -25,6 +26,8 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <NetWorthSummary accounts={accounts || []} />
+
       <div className="grid items-start gap-6 lg:grid-cols-2">
         <BudgetProgress
           initialBudget={budgetData?.budget}

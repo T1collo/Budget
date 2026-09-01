@@ -117,10 +117,15 @@ const CreateAccount = ({children}) => {
                                     <SelectContent>
                                     <SelectItem value="CURRENT">Current</SelectItem>
                                     <SelectItem value="SAVINGS">Savings</SelectItem>
+                                    <SelectItem value="SPENDING">Spending</SelectItem>
                                     </SelectContent>
                                 </Select>
+                                <p className="text-muted-foreground text-xs">
+                                    Spending accounts track day to day expenses and are
+                                    left out of your net worth.
+                                </p>
                                 {errors.type && (
-                                    <p className="text-sm text-red-500">{errors.type.message}</p>
+                                    <p className="text-destructive text-sm">{errors.type.message}</p>
                                 )}
                             </div>
 
