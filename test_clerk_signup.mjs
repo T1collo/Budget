@@ -60,8 +60,8 @@ if (signUp.captcha_enabled && gated.length > 0) {
   console.error(
     `\nFAIL: bot protection gates social sign-up for: ${gated.join(", ")}.\n` +
       `Clicking those buttons will hang with no error.\n` +
-      `Fix: Clerk Dashboard -> Configure -> Attack protection -> turn off\n` +
-      `"Bot sign-up protection", or add these providers to the OAuth bypass.`
+      `Fix: Clerk Dashboard -> Protect -> Rules -> turn off bot sign-up\n` +
+      `protection for this instance.`
   );
   process.exit(1);
 }
