@@ -56,6 +56,7 @@ model Transaction {
   date              DateTime
   category          String
   receiptUrl        String?
+  externalId        String? // M-Pesa receipt code; the SMS import idempotency key
   isRecurring       Boolean            @default(false)
   recurringInterval RecurringInterval? // Only used if isRecurring is true
   nextRecurringDate DateTime? // Next date for recurring transaction
@@ -68,6 +69,7 @@ model Transaction {
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 
+  @@unique([userId, externalId])
   @@index([userId])
   @@index([accountId])
   @@map("transactions")
