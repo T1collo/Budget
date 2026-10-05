@@ -58,18 +58,9 @@ import { BarLoader } from "react-spinners";
 import { useRouter } from "next/navigation";
 import Papa from "papaparse"; // For generating CSV
 import * as XLSX from "xlsx";
-
-
-
+import { recurringLabel } from "@/lib/recurring";
 
 const ITEMS_PER_PAGE = 10;
-
-const RECURRING_INTERVALS = {
-  DAILY: "Daily",
-  WEEKLY: "Weekly",
-  MONTHLY: "Monthly",
-  YEARLY: "Yearly",
-};
 
 export function TransactionTable({ transactions }) {
   const { format: currency, code: currencyCode } = useCurrency();
@@ -222,7 +213,7 @@ export function TransactionTable({ transactions }) {
       Amount: (transaction.type === "EXPENSE" ? "-" : "+") + transaction.amount.toFixed(2),
       Currency: currencyCode,
       Recurring: transaction.isRecurring
-        ? RECURRING_INTERVALS[transaction.recurringInterval] || "Recurring"
+        ? recurringLabel(transaction.recurringInterval, transaction.weekdays)
         : "One-time",
     }));
   
@@ -251,7 +242,7 @@ export function TransactionTable({ transactions }) {
       Amount: (transaction.type === "EXPENSE" ? "-" : "+") + transaction.amount.toFixed(2),
       Currency: currencyCode,
       Recurring: transaction.isRecurring
-        ? RECURRING_INTERVALS[transaction.recurringInterval] || "Recurring"
+        ? recurringLabel(transaction.recurringInterval, transaction.weekdays)
         : "One-time",
     }));
   
@@ -476,6 +467,14 @@ export function TransactionTable({ transactions }) {
                         {transaction.category}
                       </span>
                     </div>
+                    {transaction.isRecurring && (
+                      <div className="text-muted-foreground mt-0.5 truncate text-xs lg:hidden">
+                        {recurringLabel(
+                          transaction.recurringInterval,
+                          transaction.weekdays
+                        )}
+                      </div>
+                    )}
                   </TableCell>
                   <TableCell className="hidden md:table-cell">
                     <span className="bg-muted inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium capitalize">
@@ -505,11 +504,10 @@ export function TransactionTable({ transactions }) {
                           <TooltipTrigger>
                             <Badge variant="secondary" className="gap-1">
                               <RefreshCw className="h-3 w-3" />
-                              {
-                                RECURRING_INTERVALS[
-                                  transaction.recurringInterval
-                                ]
-                              }
+                              {recurringLabel(
+                                transaction.recurringInterval,
+                                transaction.weekdays
+                              )}
                             </Badge>
                           </TooltipTrigger>
                           <TooltipContent>

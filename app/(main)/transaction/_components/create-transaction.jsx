@@ -35,6 +35,14 @@ const CATEGORY_NAMES = Object.fromEntries(
   defaultCategories.map((c) => [c.id, c.name])
 );
 import { transactionSchema } from "@/app/lib/schema";
+import {
+  WEEK_DAYS,
+  WEEKDAY_MASK,
+  MON_SAT_MASK,
+  dayBit,
+  schedulePhrase,
+  calculateNextRecurringDate,
+} from "@/lib/recurring";
 import useFetch from "@/hooks/use-fetch";
 import { ReceiptScanner } from "./reciept-scanner";
 
@@ -72,6 +80,7 @@ export function AddTransactionForm({
             ...(initialData.recurringInterval && {
               recurringInterval: initialData.recurringInterval,
             }),
+            ...(initialData.weekdays ? { weekdays: initialData.weekdays } : {}),
           }
         : {
             type: "EXPENSE",
@@ -152,6 +161,13 @@ export function AddTransactionForm({
   const type = watch("type");
   const isRecurring = watch("isRecurring");
   const date = watch("date");
+  const recurringInterval = watch("recurringInterval");
+  const weekdays = watch("weekdays") ?? 0;
+  const weekdayPhrase = schedulePhrase(weekdays);
+  const nextWeekday =
+    recurringInterval === "WEEKDAYS" && weekdays && date
+      ? calculateNextRecurringDate(date, "WEEKDAYS", weekdays)
+      : null;
 
   const filteredCategories = categories.filter(
     (category) => category.type === type
@@ -296,17 +312,19 @@ export function AddTransactionForm({
       </div>
 
       {/* Recurring Toggle */}
-      <div className="flex flex-row items-center justify-between rounded-lg border p-4">
-        <div className="space-y-0.5">
+      <div className="flex items-center justify-between gap-4 rounded-lg border p-4">
+        <div className="min-w-0 space-y-0.5">
           <label className="text-base font-medium">Recurring Transaction</label>
           <div className="text-sm text-muted-foreground">
             Set up a recurring schedule for this transaction
           </div>
         </div>
-        <Switch
-          checked={isRecurring}
-          onCheckedChange={(checked) => setValue("isRecurring", checked)}
-        />
+        <div className="flex size-11 shrink-0 items-center justify-center">
+          <Switch
+            checked={isRecurring}
+            onCheckedChange={(checked) => setValue("isRecurring", checked)}
+          />
+        </div>
       </div>
 
       {/* Recurring Interval */}
@@ -314,10 +332,15 @@ export function AddTransactionForm({
         <div className="space-y-2">
           <label className="text-sm font-medium">Recurring Interval</label>
           <Select
-            onValueChange={(value) => setValue("recurringInterval", value)}
-            defaultValue={getValues("recurringInterval")}
+            value={recurringInterval ?? ""}
+            onValueChange={(value) => {
+              setValue("recurringInterval", value, { shouldValidate: true });
+              if (value === "WEEKDAYS" && !getValues("weekdays")) {
+                setValue("weekdays", WEEKDAY_MASK, { shouldValidate: true });
+              }
+            }}
           >
-            <SelectTrigger>
+            <SelectTrigger className="h-11 w-full">
               <SelectValue placeholder="Select interval" />
             </SelectTrigger>
             <SelectContent>
@@ -325,6 +348,7 @@ export function AddTransactionForm({
               <SelectItem value="WEEKLY">Weekly</SelectItem>
               <SelectItem value="MONTHLY">Monthly</SelectItem>
               <SelectItem value="YEARLY">Yearly</SelectItem>
+              <SelectItem value="WEEKDAYS">On selected days</SelectItem>
             </SelectContent>
           </Select>
           {errors.recurringInterval && (
@@ -332,22 +356,97 @@ export function AddTransactionForm({
               {errors.recurringInterval.message}
             </p>
           )}
+
+          {recurringInterval === "WEEKDAYS" && (
+            <div className="space-y-3 pt-2">
+              <label className="text-sm font-medium">Days</label>
+              <div className="flex flex-wrap gap-x-4">
+                <button
+                  type="button"
+                  className={cn(
+                    "min-h-11 text-sm",
+                    weekdays === WEEKDAY_MASK
+                      ? "font-medium text-foreground"
+                      : "text-muted-foreground"
+                  )}
+                  onClick={() =>
+                    setValue("weekdays", WEEKDAY_MASK, { shouldValidate: true })
+                  }
+                >
+                  Weekdays
+                </button>
+                <button
+                  type="button"
+                  className={cn(
+                    "min-h-11 text-sm",
+                    weekdays === MON_SAT_MASK
+                      ? "font-medium text-foreground"
+                      : "text-muted-foreground"
+                  )}
+                  onClick={() =>
+                    setValue("weekdays", MON_SAT_MASK, { shouldValidate: true })
+                  }
+                >
+                  Mon–Sat
+                </button>
+              </div>
+              {/* Equal circles that fill the row; max 44px so nothing clips on narrow phones. */}
+              <div className="grid grid-cols-7 gap-1 sm:gap-1.5" role="group" aria-label="Days">
+                {WEEK_DAYS.map((day) => {
+                  const on = Boolean(weekdays & dayBit(day.index));
+                  return (
+                    <button
+                      key={day.name}
+                      type="button"
+                      aria-pressed={on}
+                      aria-label={day.name}
+                      className={cn(
+                        "mx-auto flex aspect-square w-full max-w-11 items-center justify-center rounded-full text-sm font-medium touch-manipulation",
+                        on
+                          ? "bg-foreground text-background"
+                          : "border border-border text-muted-foreground"
+                      )}
+                      onClick={() => {
+                        const bit = dayBit(day.index);
+                        const current = getValues("weekdays") ?? 0;
+                        setValue(
+                          "weekdays",
+                          on ? current & ~bit : current | bit,
+                          { shouldValidate: true }
+                        );
+                      }}
+                    >
+                      {day.letter}
+                    </button>
+                  );
+                })}
+              </div>
+              {weekdayPhrase && nextWeekday ? (
+                <p className="text-pretty text-sm text-muted-foreground">
+                  {weekdayPhrase}. Next is {format(nextWeekday, "EEE d MMM")}.
+                </p>
+              ) : null}
+              {errors.weekdays && (
+                <p className="text-sm text-red-500">{errors.weekdays.message}</p>
+              )}
+            </div>
+          )}
         </div>
       )}
 
       {/* Actions */}
-      <div className="flex flex-col gap-4 md:flex-row w-full max-w-full px-4 md:px-8">
+      <div className="flex w-full max-w-full flex-col gap-3 md:flex-row">
   <Button
     type="button"
     variant="outline"
-    className="w-full md:max-w-xs"
+    className="h-11 w-full md:max-w-xs"
     onClick={() => router.back()}
   >
     Cancel
   </Button>
   <Button
     type="submit"
-    className="w-full md:max-w-xs"
+    className="h-11 w-full md:max-w-xs"
     disabled={transactionLoading}
   >
     {transactionLoading ? (

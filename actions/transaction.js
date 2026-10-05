@@ -8,6 +8,7 @@ import aj from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { monthRange, crossedThreshold } from "@/lib/budget-utils";
 import { requireUser } from "@/lib/auth-user";
+import { calculateNextRecurringDate } from "@/lib/recurring";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -113,9 +114,17 @@ export async function createTransaction(data) {
         data: {
           ...data,
           userId: user.id,
+          weekdays:
+            data.isRecurring && data.recurringInterval === "WEEKDAYS"
+              ? data.weekdays
+              : null,
           nextRecurringDate:
             data.isRecurring && data.recurringInterval
-              ? calculateNextRecurringDate(data.date, data.recurringInterval)
+              ? calculateNextRecurringDate(
+                  data.date,
+                  data.recurringInterval,
+                  data.weekdays
+                )
               : null,
         },
       });
@@ -191,9 +200,17 @@ export async function updateTransaction(id, data) {
         },
         data: {
           ...data,
+          weekdays:
+            data.isRecurring && data.recurringInterval === "WEEKDAYS"
+              ? data.weekdays
+              : null,
           nextRecurringDate:
             data.isRecurring && data.recurringInterval
-              ? calculateNextRecurringDate(data.date, data.recurringInterval)
+              ? calculateNextRecurringDate(
+                  data.date,
+                  data.recurringInterval,
+                  data.weekdays
+                )
               : null,
         },
       });
@@ -305,26 +322,4 @@ export async function scanReceipt(file) {
     console.error("Error scanning receipt:", error);
     throw new Error("Failed to scan receipt");
   }
-}
-
-// Helper function to calculate next recurring date
-function calculateNextRecurringDate(startDate, interval) {
-  const date = new Date(startDate);
-
-  switch (interval) {
-    case "DAILY":
-      date.setDate(date.getDate() + 1);
-      break;
-    case "WEEKLY":
-      date.setDate(date.getDate() + 7);
-      break;
-    case "MONTHLY":
-      date.setMonth(date.getMonth() + 1);
-      break;
-    case "YEARLY":
-      date.setFullYear(date.getFullYear() + 1);
-      break;
-  }
-
-  return date;
 }
