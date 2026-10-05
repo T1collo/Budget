@@ -59,6 +59,7 @@ model Transaction {
   externalId       String?           // M-Pesa receipt code; the SMS import idempotency key
   isRecurring      Boolean           @default(false)
   recurringInterval RecurringInterval? // Only used if isRecurring is true
+  weekdays          Int?              // WEEKDAYS bitmask: bit 0 Sunday … bit 6 Saturday
   nextRecurringDate DateTime?         // Next date for recurring transaction
   lastProcessed    DateTime?         // Last time this recurring transaction was processed
   status           TransactionStatus  @default(COMPLETED)
@@ -126,4 +127,5 @@ enum RecurringInterval {
   WEEKLY
   MONTHLY
   YEARLY
+  WEEKDAYS
 }
