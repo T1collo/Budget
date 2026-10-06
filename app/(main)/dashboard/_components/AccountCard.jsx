@@ -11,7 +11,6 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { DeleteAccount, updateDefaultAccount } from "@/actions/account";
-import { isSpendingAccount } from "@/lib/accounts";
 import { useCurrency } from "@/components/currency-provider";
 
 export function AccountCard({ account }) {
@@ -90,7 +89,6 @@ export function AccountCard({ account }) {
           <p className="text-muted-foreground mt-1 text-xs">
             {_count?.transactions ?? 0} transaction
             {_count?.transactions === 1 ? "" : "s"}
-            {isSpendingAccount(account) && " · not in net worth"}
           </p>
         </Link>
       </CardContent>

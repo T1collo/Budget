@@ -113,7 +113,7 @@ enum TransactionType {
 enum AccountType {
   CURRENT
   SAVINGS
-  SPENDING // day-to-day spending; deliberately excluded from net worth
+  SPENDING // day-to-day spending; still counted in net worth
 }
 
 enum TransactionStatus {

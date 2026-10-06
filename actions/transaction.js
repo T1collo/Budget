@@ -180,7 +180,18 @@ export async function updateTransaction(id, data) {
 
     if (!originalTransaction) throw new Error("Transaction not found");
 
-    // Calculate balance changes
+    const oldAccountId = originalTransaction.accountId;
+    const newAccountId = data.accountId;
+
+    // Moving accounts requires the destination to belong to this user too.
+    if (newAccountId !== oldAccountId) {
+      const destination = await db.account.findUnique({
+        where: { id: newAccountId, userId: user.id },
+      });
+      if (!destination) throw new Error("Account not found");
+    }
+
+    // Effect each version of the row has on its account balance.
     const oldBalanceChange =
       originalTransaction.type === "EXPENSE"
         ? -originalTransaction.amount.toNumber()
@@ -188,8 +199,6 @@ export async function updateTransaction(id, data) {
 
     const newBalanceChange =
       data.type === "EXPENSE" ? -data.amount : data.amount;
-
-    const netBalanceChange = newBalanceChange - oldBalanceChange;
 
     // Update transaction and account balance in a transaction
     const transaction = await db.$transaction(async (tx) => {
@@ -215,21 +224,36 @@ export async function updateTransaction(id, data) {
         },
       });
 
-      // Update account balance
-      await tx.account.update({
-        where: { id: data.accountId },
-        data: {
-          balance: {
-            increment: netBalanceChange,
+      if (oldAccountId === newAccountId) {
+        // Same account: apply the net change in amount/type.
+        await tx.account.update({
+          where: { id: newAccountId },
+          data: {
+            balance: {
+              increment: newBalanceChange - oldBalanceChange,
+            },
           },
-        },
-      });
+        });
+      } else {
+        // Undo the old row on the old account, then apply the new row on the new one.
+        await tx.account.update({
+          where: { id: oldAccountId },
+          data: { balance: { increment: -oldBalanceChange } },
+        });
+        await tx.account.update({
+          where: { id: newAccountId },
+          data: { balance: { increment: newBalanceChange } },
+        });
+      }
 
       return updated;
     });
 
     revalidatePath("/dashboard");
-    revalidatePath(`/account/${data.accountId}`);
+    revalidatePath(`/account/${newAccountId}`);
+    if (oldAccountId !== newAccountId) {
+      revalidatePath(`/account/${oldAccountId}`);
+    }
 
     return { success: true, data: serializeAmount(transaction) };
   } catch (error) {

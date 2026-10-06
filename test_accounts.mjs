@@ -4,18 +4,18 @@ import { summariseBalances, isSpendingAccount } from "./lib/accounts.js";
 
 const a = (type, balance) => ({ type, balance });
 
-// spending money is tracked but kept out of net worth
+// every account balance counts toward net worth
 {
   const s = summariseBalances([a("CURRENT", 100), a("SAVINGS", 400), a("SPENDING", 50)]);
-  assert.equal(s.netWorth, 500);
+  assert.equal(s.netWorth, 550);
   assert.equal(s.spending, 50);
   assert.equal(s.total, 550);
 }
 
-// only spending accounts -> net worth is zero, not the spending total
+// only spending accounts -> net worth is the spending total
 {
   const s = summariseBalances([a("SPENDING", 80), a("SPENDING", 20)]);
-  assert.equal(s.netWorth, 0);
+  assert.equal(s.netWorth, 100);
   assert.equal(s.spending, 100);
 }
 
@@ -27,7 +27,7 @@ assert.deepEqual(summariseBalances(null), { netWorth: 0, spending: 0, total: 0 }
 // balances may arrive as strings; junk must not turn a total into NaN
 {
   const s = summariseBalances([a("CURRENT", "250.50"), a("SPENDING", "9.50")]);
-  assert.equal(s.netWorth, 250.5);
+  assert.equal(s.netWorth, 260);
   assert.equal(s.spending, 9.5);
 }
 {
@@ -39,10 +39,10 @@ assert.deepEqual(summariseBalances(null), { netWorth: 0, spending: 0, total: 0 }
 // negative balances (overdrawn) still count
 assert.equal(summariseBalances([a("CURRENT", -40), a("SAVINGS", 100)]).netWorth, 60);
 
-// an unknown future type counts toward neither, rather than silently inflating net worth
+// unknown types still count — net worth is remaining money on every account
 {
   const s = summariseBalances([a("CURRENT", 100), a("CRYPTO", 999)]);
-  assert.equal(s.netWorth, 100);
+  assert.equal(s.netWorth, 1099);
   assert.equal(s.spending, 0);
 }
 

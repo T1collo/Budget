@@ -121,8 +121,8 @@ const CreateAccount = ({children}) => {
                                     </SelectContent>
                                 </Select>
                                 <p className="text-muted-foreground text-xs">
-                                    Spending accounts track day to day expenses and are
-                                    left out of your net worth.
+                                    Spending accounts track day to day expenses. Their
+                                    balance still counts in net worth.
                                 </p>
                                 {errors.type && (
                                     <p className="text-destructive text-sm">{errors.type.message}</p>
